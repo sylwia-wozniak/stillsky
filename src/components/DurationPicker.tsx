@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollView } from 'react-native';
+import React, { useRef } from 'react';
+import { ScrollView, View } from 'react-native';
 import { Chip } from './Chip';
 
 interface DurationPickerProps {
@@ -10,17 +10,29 @@ interface DurationPickerProps {
 }
 
 export function DurationPicker({ options, value, onChange, testIdFor }: DurationPickerProps) {
+  const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
+  const didInitialScroll = useRef(false);
+
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
+    <ScrollView ref={scrollRef} horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
       {options.map(m => (
-        <Chip
+        <View
           key={m}
-          label={`${m} min`}
-          selected={m === value}
-          onPress={() => onChange(m)}
-          testID={testIdFor(m)}
-          accessibilityLabel={`${m} minutes`}
-        />
+          onLayout={e => {
+            // Bring the initially selected duration into view once.
+            if (m === value && !didInitialScroll.current) {
+              didInitialScroll.current = true;
+              scrollRef.current?.scrollTo({ x: Math.max(0, e.nativeEvent.layout.x - 40), animated: false });
+            }
+          }}>
+          <Chip
+            label={`${m} min`}
+            selected={m === value}
+            onPress={() => onChange(m)}
+            testID={testIdFor(m)}
+            accessibilityLabel={`${m} minutes`}
+          />
+        </View>
       ))}
     </ScrollView>
   );

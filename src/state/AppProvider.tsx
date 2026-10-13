@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { generateDemoSessions } from '../domain/demo';
 import { makeId } from '../domain/id';
 import { completeSession, failSession, remainingMs, restoreActiveSession } from '../domain/timer';
 import {
@@ -26,6 +27,7 @@ export interface AppContextValue {
   startSession(plannedMin: number, tag: Tag): Promise<void>;
   giveUp(): Promise<void>;
   finishIfDue(now: Date): Promise<Session | null>;
+  seedDemoData(): Promise<void>;
   resetAll(): Promise<void>;
   showToast(msg: string): void;
 }
@@ -140,6 +142,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const done = completeSession(a, makeId());
         await addSession(done);
         return done;
+      },
+      async seedDemoData() {
+        const demo = generateDemoSessions(new Date());
+        sessionsRef.current = demo;
+        setSessions(demo);
+        await persist(() => storage.saveSessions(demo));
       },
       async resetAll() {
         await persist(() => storage.clearAll());
