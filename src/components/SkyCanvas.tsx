@@ -25,10 +25,23 @@ export function SkyCanvas({ sky, onSelect }: SkyCanvasProps) {
 
   return (
     <View style={{ width, height: SKY_HEIGHT * scale }} testID={TID.sky.canvas}>
-      <Svg width={width} height={SKY_HEIGHT * scale} viewBox={`0 0 ${SKY_WIDTH} ${SKY_HEIGHT}`}>
+      <Svg
+        width={width}
+        height={SKY_HEIGHT * scale}
+        viewBox={`0 0 ${SKY_WIDTH} ${SKY_HEIGHT}`}
+      >
         {Array.from({ length: sky.extraStars }, (_, i) => {
           const p = extraStarPosition(i);
-          return <Circle key={`extra-${i}`} cx={p.x} cy={p.y} r={4} fill={colors.star} opacity={0.8} />;
+          return (
+            <Circle
+              key={`extra-${i}`}
+              cx={p.x}
+              cy={p.y}
+              r={4}
+              fill={colors.star}
+              opacity={0.8}
+            />
+          );
         })}
         {CONSTELLATIONS.map((c, ci) => {
           const progress = sky.constellations[ci];
@@ -56,7 +69,15 @@ export function SkyCanvas({ sky, onSelect }: SkyCanvasProps) {
                 if (!lit && !isCurrent) return null;
                 return (
                   <React.Fragment key={`${c.id}-${si}`}>
-                    {lit && <Circle cx={s.x} cy={s.y} r={18} fill={colors.star} opacity={0.15} />}
+                    {lit && (
+                      <Circle
+                        cx={s.x}
+                        cy={s.y}
+                        r={18}
+                        fill={colors.star}
+                        opacity={0.15}
+                      />
+                    )}
                     <Circle
                       cx={s.x}
                       cy={s.y}
@@ -68,7 +89,13 @@ export function SkyCanvas({ sky, onSelect }: SkyCanvasProps) {
                 );
               })}
               {complete && (
-                <SvgText x={labelX} y={labelY} fill={colors.muted} fontSize={26}>
+                <SvgText
+                  x={labelX}
+                  y={labelY}
+                  fill={colors.muted}
+                  fontSize={26}
+                  fontFamily="Outfit-Regular"
+                >
                   {c.name}
                 </SvgText>
               )}
@@ -96,8 +123,10 @@ export function SkyCanvas({ sky, onSelect }: SkyCanvasProps) {
               {
                 left,
                 top,
-                width: (Math.max(...xs) - Math.min(...xs) + HIT_PAD * 2) * scale,
-                height: (Math.max(...ys) - Math.min(...ys) + HIT_PAD * 2) * scale,
+                width:
+                  (Math.max(...xs) - Math.min(...xs) + HIT_PAD * 2) * scale,
+                height:
+                  (Math.max(...ys) - Math.min(...ys) + HIT_PAD * 2) * scale,
               },
             ]}
           />

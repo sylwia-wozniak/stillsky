@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TID } from '../testIds';
-import { colors, spacing } from '../theme/theme';
+import { colors, fonts, radius, spacing } from '../theme/theme';
 
 const HIDE_AFTER_MS = 3000;
 
-export function Toast({ message, onHide }: { message: string | null; onHide(): void }) {
+export function Toast({
+  message,
+  onHide,
+}: {
+  message: string | null;
+  onHide(): void;
+}) {
   useEffect(() => {
     if (!message) return;
     const t = setTimeout(onHide, HIDE_AFTER_MS);
@@ -14,7 +20,12 @@ export function Toast({ message, onHide }: { message: string | null; onHide(): v
 
   if (!message) return null;
   return (
-    <View style={styles.toast} testID={TID.toast} accessibilityLabel={message} accessibilityLiveRegion="polite">
+    <View
+      style={styles.toast}
+      testID={TID.toast}
+      accessibilityLabel={message}
+      accessibilityLiveRegion="polite"
+    >
       <Text style={styles.text}>{message}</Text>
     </View>
   );
@@ -27,10 +38,10 @@ const styles = StyleSheet.create({
     right: spacing.lg,
     bottom: 100,
     padding: spacing.md,
-    borderRadius: 12,
-    backgroundColor: colors.surface,
+    borderRadius: radius.sm,
+    backgroundColor: colors.dialog,
     borderWidth: 1,
     borderColor: colors.danger,
   },
-  text: { color: colors.text, textAlign: 'center' },
+  text: { color: colors.text, textAlign: 'center', fontFamily: fonts.regular },
 });

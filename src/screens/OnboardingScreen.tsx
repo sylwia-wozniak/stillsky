@@ -1,10 +1,25 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { validateName } from '../domain/validation';
 import { useApp } from '../state/AppProvider';
 import { TID } from '../testIds';
-import { colors, spacing, typography } from '../theme/theme';
+import {
+  colors,
+  fonts,
+  glassCard,
+  radius,
+  spacing,
+  typography,
+} from '../theme/theme';
 
 export function OnboardingScreen() {
   const { createUser } = useApp();
@@ -16,7 +31,8 @@ export function OnboardingScreen() {
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
         <Text style={styles.stars}>✦ · ✧ · ✦</Text>
         <Text style={typography.title}>Welcome to Stillsky</Text>
         <Text style={[typography.body, styles.lead]}>
@@ -39,7 +55,11 @@ export function OnboardingScreen() {
         />
         <View style={styles.hintRow}>
           {touched && !result.ok ? (
-            <Text testID={TID.onboarding.nameError} accessibilityLabel={result.error} style={styles.error}>
+            <Text
+              testID={TID.onboarding.nameError}
+              accessibilityLabel={result.error}
+              style={styles.error}
+            >
               {result.error}
             </Text>
           ) : null}
@@ -51,7 +71,8 @@ export function OnboardingScreen() {
           accessibilityState={{ disabled: !result.ok }}
           disabled={!result.ok}
           onPress={() => result.ok && createUser(result.value)}
-          style={[styles.button, !result.ok && styles.buttonDisabled]}>
+          style={[styles.button, !result.ok && styles.buttonDisabled]}
+        >
           <Text style={styles.buttonText}>Begin</Text>
         </Pressable>
       </KeyboardAvoidingView>
@@ -60,20 +81,40 @@ export function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  container: { flex: 1, padding: spacing.lg, justifyContent: 'center', gap: spacing.md },
-  stars: { color: colors.star, fontSize: 24, textAlign: 'center', marginBottom: spacing.lg },
+  safe: { flex: 1 },
+  container: {
+    flex: 1,
+    padding: spacing.lg,
+    justifyContent: 'center',
+    gap: spacing.md,
+  },
+  stars: {
+    color: colors.star,
+    fontSize: 24,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+    letterSpacing: 6,
+  },
   lead: { color: colors.muted, marginBottom: spacing.xl },
   input: {
-    backgroundColor: colors.surface,
+    ...glassCard,
     color: colors.text,
-    borderRadius: 12,
     padding: spacing.md,
     fontSize: 18,
+    fontFamily: fonts.regular,
   },
   hintRow: { minHeight: 20 },
-  error: { color: colors.danger },
-  button: { backgroundColor: colors.accent, borderRadius: 24, padding: spacing.md, alignItems: 'center' },
-  buttonDisabled: { opacity: 0.4 },
-  buttonText: { color: colors.background, fontSize: 18, fontWeight: '600' },
+  error: { color: colors.danger, fontFamily: fonts.regular },
+  button: {
+    backgroundColor: colors.primary,
+    borderRadius: radius.pill,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  buttonDisabled: { opacity: 0.35 },
+  buttonText: {
+    color: colors.onPrimary,
+    fontSize: 18,
+    fontFamily: fonts.medium,
+  },
 });

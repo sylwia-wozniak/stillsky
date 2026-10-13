@@ -18,7 +18,8 @@ export function BarChart({ values, labels, labelEvery = 1 }: BarChartProps) {
   const [width, setWidth] = useState(0);
   const max = Math.max(1, ...values);
   const barW = width > 0 ? width / values.length : 0;
-  const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
+  const onLayout = (e: LayoutChangeEvent) =>
+    setWidth(e.nativeEvent.layout.width);
 
   return (
     <View>
@@ -35,7 +36,7 @@ export function BarChart({ values, labels, labelEvery = 1 }: BarChartProps) {
                   width={Math.max(barW - GAP, 1)}
                   height={Math.max(h, 2)}
                   rx={2}
-                  fill={v > 0 ? colors.accent : colors.surface}
+                  fill={v > 0 ? colors.accent : colors.glassStrong}
                 />
               );
             })}
@@ -56,7 +57,11 @@ export function BarChart({ values, labels, labelEvery = 1 }: BarChartProps) {
       </View>
       <View style={styles.labels}>
         {labels.map((l, i) => (
-          <Text key={i} style={[styles.label, { width: barW }]} numberOfLines={1}>
+          <Text
+            key={i}
+            style={[styles.label, { width: barW }]}
+            numberOfLines={1}
+          >
             {i % labelEvery === 0 ? l : ''}
           </Text>
         ))}

@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { TID } from '../testIds';
-import { colors, spacing, typography } from '../theme/theme';
+import { colors, fonts, radius, spacing, typography } from '../theme/theme';
 
 export interface ConfirmDialogProps {
   visible: boolean;
@@ -28,10 +35,19 @@ export function ConfirmDialog({
   const canConfirm = requireText === undefined || typed === requireText;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onCancel}
+    >
       <View style={styles.backdrop}>
         <View style={styles.card} testID={TID.dialog.container}>
-          <Text style={typography.body} testID={TID.dialog.message} accessibilityLabel={message}>
+          <Text
+            style={typography.body}
+            testID={TID.dialog.message}
+            accessibilityLabel={message}
+          >
             {message}
           </Text>
           {requireText !== undefined ? (
@@ -53,7 +69,8 @@ export function ConfirmDialog({
               accessibilityLabel="Cancel"
               accessibilityRole="button"
               onPress={onCancel}
-              style={[styles.button, styles.cancel]}>
+              style={[styles.button, styles.cancel]}
+            >
               <Text style={styles.cancelText}>Cancel</Text>
             </Pressable>
             <Pressable
@@ -63,7 +80,12 @@ export function ConfirmDialog({
               accessibilityState={{ disabled: !canConfirm }}
               disabled={!canConfirm}
               onPress={onConfirm}
-              style={[styles.button, styles.confirm, !canConfirm && styles.disabled]}>
+              style={[
+                styles.button,
+                styles.confirm,
+                !canConfirm && styles.disabled,
+              ]}
+            >
               <Text style={styles.confirmText}>{confirmLabel}</Text>
             </Pressable>
           </View>
@@ -76,23 +98,41 @@ export function ConfirmDialog({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: colors.backdrop,
     justifyContent: 'center',
     padding: spacing.lg,
   },
-  card: { backgroundColor: colors.surface, borderRadius: 16, padding: spacing.lg, gap: spacing.md },
+  card: {
+    backgroundColor: colors.dialog,
+    borderColor: colors.glassBorder,
+    borderWidth: 1,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
   input: {
-    backgroundColor: colors.background,
+    fontFamily: fonts.regular,
+    backgroundColor: colors.glass,
+    borderColor: colors.glassBorder,
+    borderWidth: 1,
     color: colors.text,
     borderRadius: 10,
     padding: spacing.md,
     fontSize: 16,
   },
   row: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm },
-  button: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderRadius: 20 },
+  button: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: 20,
+  },
   cancel: { backgroundColor: 'transparent' },
-  cancelText: { color: colors.text, fontSize: 16 },
+  cancelText: { color: colors.text, fontSize: 16, fontFamily: fonts.regular },
   confirm: { backgroundColor: colors.danger },
-  confirmText: { color: colors.background, fontSize: 16, fontWeight: '600' },
+  confirmText: {
+    color: colors.onPrimary,
+    fontSize: 16,
+    fontFamily: fonts.medium,
+  },
   disabled: { opacity: 0.4 },
 });

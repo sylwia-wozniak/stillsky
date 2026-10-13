@@ -5,7 +5,8 @@ Sound.setCategory('Ambient', true);
 
 // react-native-sound wants a path, not a require() id: resolve the bundled asset to its URI
 // (Metro URL in debug, bundled file / raw resource in release).
-const CHIME_URI = Image.resolveAssetSource(require('./assets/chime.wav'))?.uri ?? '';
+const CHIME_URI =
+  Image.resolveAssetSource(require('./assets/chime.wav'))?.uri ?? '';
 
 export function playChime(): void {
   try {

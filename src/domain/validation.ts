@@ -1,6 +1,8 @@
 export const NAME_MAX_LENGTH = 20;
 
-export type NameResult = { ok: true; value: string } | { ok: false; error: string };
+export type NameResult =
+  | { ok: true; value: string }
+  | { ok: false; error: string };
 
 export function validateName(raw: string): NameResult {
   const value = raw.trim();
@@ -10,7 +12,10 @@ export function validateName(raw: string): NameResult {
     return { ok: false, error: 'Please enter a name' };
   }
   if (length > NAME_MAX_LENGTH) {
-    return { ok: false, error: `Name must be at most ${NAME_MAX_LENGTH} characters` };
+    return {
+      ok: false,
+      error: `Name must be at most ${NAME_MAX_LENGTH} characters`,
+    };
   }
   return { ok: true, value };
 }

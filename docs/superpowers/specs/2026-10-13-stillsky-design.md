@@ -15,7 +15,7 @@ It has two goals:
 
 ### Out of scope (v1)
 - Paid plans, accounts, login, backend, sync. All data is local to the device.
-- Session history list, custom tags, notifications, "strict mode" (failing on app background).
+- Session history list, custom intentions, notifications, "strict mode" (failing on app background).
 - The E2E test suites themselves (Appium / Mobilewright) — the app is only made ready for them.
 
 ## 2. Tech stack
@@ -38,11 +38,11 @@ Stillsky/
 ├── src/
 │   ├── app/            RootNavigator: Onboarding stack vs MainTabs
 │   ├── screens/        OnboardingScreen, FocusScreen, SkyScreen, StatsScreen, SettingsScreen
-│   ├── components/     Star, SkyCanvas, BarChart, DurationPicker, TagChips, ConfirmDialog, Toast
+│   ├── components/     Star, SkyCanvas, BarChart, DurationPicker, IntentionChips, ConfirmDialog, Toast
 │   ├── domain/         pure TS, no React
 │   │   ├── timer.ts            session state machine + remaining-time calculation
 │   │   ├── constellations.ts   constellation definitions + lit-star mapping
-│   │   ├── stats.ts            aggregation per day/week/month, tag breakdown
+│   │   ├── stats.ts            aggregation per day/week/month, intention breakdown
 │   │   └── validation.ts       name and duration validation
 │   ├── storage/        typed AsyncStorage wrapper with defaults + schemaVersion
 │   ├── state/          AppProvider (React Context): user, settings, sessions, activeSession
@@ -102,8 +102,18 @@ States:
 - **Reset all data** → dialog requiring the user to type `RESET`; confirm button disabled until it
   matches exactly. Confirm clears all storage keys and navigates to Onboarding.
 - **Debug builds only**: **Seed demo data** button — generates ~30 days of random sessions
-  (mixed tags, ~80% completed) replacing existing sessions.
+  (mixed intentions, ~80% completed) replacing existing sessions.
 - App version (from native build) at bottom.
+
+## 4.6 Visual design ("Twilight glass")
+
+- One shared background behind every screen: vertical dusk gradient `#171A45 → #36296A → #86568A`,
+  two soft radial haze layers (violet top-right, rose bottom-left) and ~45 faint fixed stars.
+- Surfaces are translucent "glass": `rgba(255,255,255,0.08)` fill, `rgba(255,255,255,0.18)` 1px border,
+  18px radius. Filled buttons and selected chips are near-white (`rgba(255,255,255,0.92)`) with indigo text.
+- Font: **Outfit** (bundled, SIL OFL) — Light for titles/timer/numbers, Regular for body, Medium for buttons.
+- Duration chips show numbers only (the section label says "minutes"); the picker scrolls the selected
+  value into view only when it would otherwise be off-screen.
 
 ## 5. Data model
 
@@ -160,7 +170,8 @@ interface ActiveSession { startedAt: string; plannedMin: number; intention: Inte
 Vitest tests for:
 - `timer.ts`: start, remaining-time calculation, completion, give-up, restore after relaunch.
 - `constellations.ts`: star N → (constellation, index); completion detection; overflow stars.
-- `stats.ts`: period filtering, bucketing, totals, success rate, tag breakdown, empty input.
+- `storage`: sessions saved with the pre-rename `tag` field are migrated to `intention` on load.
+- `stats.ts`: period filtering, bucketing, totals, success rate, intention breakdown, empty input.
 - `validation.ts`: name and duration bounds.
 - `storage/`: defaults on missing/corrupt data, round-trip read/write (in-memory AsyncStorage mock via `vi.mock`).
 

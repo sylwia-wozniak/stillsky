@@ -23,7 +23,12 @@ export function formatMMSS(ms: number): string {
 }
 
 export function completeSession(a: ActiveSession, id: string): Session {
-  return { id, ...a, endedAt: plannedEnd(a).toISOString(), status: 'completed' };
+  return {
+    id,
+    ...a,
+    endedAt: plannedEnd(a).toISOString(),
+    status: 'completed',
+  };
 }
 
 export function failSession(a: ActiveSession, now: Date, id: string): Session {

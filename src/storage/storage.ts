@@ -19,14 +19,19 @@ export const KEYS = {
 
 type Key = (typeof KEYS)[keyof typeof KEYS];
 
-const isObject = (d: unknown): d is Record<string, unknown> => typeof d === 'object' && d !== null;
+const isObject = (d: unknown): d is Record<string, unknown> =>
+  typeof d === 'object' && d !== null;
 const isString = (v: unknown): v is string => typeof v === 'string';
 const isIntention = (v: unknown) => INTENTIONS.some(t => t.id === v);
 
-const isUser = (d: unknown): d is User => isObject(d) && isString(d.name) && isString(d.createdAt);
+const isUser = (d: unknown): d is User =>
+  isObject(d) && isString(d.name) && isString(d.createdAt);
 
 const isActiveSession = (d: unknown): d is ActiveSession =>
-  isObject(d) && isString(d.startedAt) && typeof d.plannedMin === 'number' && isIntention(d.intention);
+  isObject(d) &&
+  isString(d.startedAt) &&
+  typeof d.plannedMin === 'number' &&
+  isIntention(d.intention);
 
 /** Sessions saved before the Tag → Intention rename stored the field as `tag`. */
 function migrateLegacyTag(d: unknown): unknown {
@@ -62,7 +67,10 @@ async function read(key: Key): Promise<unknown | null> {
 }
 
 function write(key: Key, data: unknown): Promise<void> {
-  return AsyncStorage.setItem(key, JSON.stringify({ schemaVersion: SCHEMA_VERSION, data }));
+  return AsyncStorage.setItem(
+    key,
+    JSON.stringify({ schemaVersion: SCHEMA_VERSION, data }),
+  );
 }
 
 export async function loadUser(): Promise<User | null> {
@@ -79,9 +87,14 @@ export async function loadSettings(): Promise<Settings> {
   if (!isObject(d)) return { ...DEFAULT_SETTINGS };
   return {
     defaultDurationMin:
-      typeof d.defaultDurationMin === 'number' ? d.defaultDurationMin : DEFAULT_SETTINGS.defaultDurationMin,
+      typeof d.defaultDurationMin === 'number'
+        ? d.defaultDurationMin
+        : DEFAULT_SETTINGS.defaultDurationMin,
     sound: typeof d.sound === 'boolean' ? d.sound : DEFAULT_SETTINGS.sound,
-    keepAwake: typeof d.keepAwake === 'boolean' ? d.keepAwake : DEFAULT_SETTINGS.keepAwake,
+    keepAwake:
+      typeof d.keepAwake === 'boolean'
+        ? d.keepAwake
+        : DEFAULT_SETTINGS.keepAwake,
   };
 }
 
@@ -94,7 +107,9 @@ export async function loadSessions(): Promise<Session[]> {
   if (!Array.isArray(d)) return [];
   const valid = d.map(migrateLegacyTag).filter(isSession);
   if (valid.length !== d.length) {
-    console.warn(`[storage] dropped ${d.length - valid.length} invalid session(s)`);
+    console.warn(
+      `[storage] dropped ${d.length - valid.length} invalid session(s)`,
+    );
   }
   return valid;
 }
@@ -109,7 +124,9 @@ export async function loadActiveSession(): Promise<ActiveSession | null> {
 }
 
 export function saveActiveSession(a: ActiveSession | null): Promise<void> {
-  return a === null ? AsyncStorage.removeItem(KEYS.activeSession) : write(KEYS.activeSession, a);
+  return a === null
+    ? AsyncStorage.removeItem(KEYS.activeSession)
+    : write(KEYS.activeSession, a);
 }
 
 export function clearAll(): Promise<void> {

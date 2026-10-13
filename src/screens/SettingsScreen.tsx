@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { version } from '../../package.json';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -7,10 +15,18 @@ import { DurationPicker } from '../components/DurationPicker';
 import { durationOptions, validateName } from '../domain/validation';
 import { useApp } from '../state/AppProvider';
 import { TID } from '../testIds';
-import { colors, spacing, typography } from '../theme/theme';
+import {
+  colors,
+  fonts,
+  glassCard,
+  radius,
+  spacing,
+  typography,
+} from '../theme/theme';
 
 export function SettingsScreen() {
-  const { user, settings, renameUser, updateSettings, resetAll, seedDemoData } = useApp();
+  const { user, settings, renameUser, updateSettings, resetAll, seedDemoData } =
+    useApp();
   const [name, setName] = useState(user?.name ?? '');
   const [confirmReset, setConfirmReset] = useState(false);
   const nameResult = validateName(name);
@@ -20,7 +36,10 @@ export function SettingsScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={typography.title}>Settings</Text>
 
         <Text style={styles.section}>Name</Text>
@@ -41,17 +60,22 @@ export function SettingsScreen() {
             accessibilityState={{ disabled: !nameChanged }}
             disabled={!nameChanged}
             onPress={() => nameResult.ok && renameUser(nameResult.value)}
-            style={[styles.saveButton, !nameChanged && styles.disabled]}>
+            style={[styles.saveButton, !nameChanged && styles.disabled]}
+          >
             <Text style={styles.saveText}>Save</Text>
           </Pressable>
         </View>
         {!nameResult.ok ? (
-          <Text style={styles.error} testID={TID.settings.nameError} accessibilityLabel={nameResult.error}>
+          <Text
+            style={styles.error}
+            testID={TID.settings.nameError}
+            accessibilityLabel={nameResult.error}
+          >
             {nameResult.error}
           </Text>
         ) : null}
 
-        <Text style={styles.section}>Default duration</Text>
+        <Text style={styles.section}>Default duration · minutes</Text>
         <DurationPicker
           options={durationOptions(false)}
           value={settings.defaultDurationMin}
@@ -59,25 +83,28 @@ export function SettingsScreen() {
           testIdFor={TID.settings.duration}
         />
 
-        <View style={styles.row}>
-          <Text style={typography.body}>Sound</Text>
-          <Switch
-            testID={TID.settings.soundToggle}
-            accessibilityLabel="Sound"
-            value={settings.sound}
-            onValueChange={v => updateSettings({ sound: v })}
-            trackColor={{ true: colors.accent, false: colors.surface }}
-          />
-        </View>
-        <View style={styles.row}>
-          <Text style={typography.body}>Keep screen awake during focus</Text>
-          <Switch
-            testID={TID.settings.keepAwakeToggle}
-            accessibilityLabel="Keep screen awake during focus"
-            value={settings.keepAwake}
-            onValueChange={v => updateSettings({ keepAwake: v })}
-            trackColor={{ true: colors.accent, false: colors.surface }}
-          />
+        <View style={styles.card}>
+          <View style={styles.row}>
+            <Text style={styles.rowLabel}>Sound</Text>
+            <Switch
+              testID={TID.settings.soundToggle}
+              accessibilityLabel="Sound"
+              value={settings.sound}
+              onValueChange={v => updateSettings({ sound: v })}
+              trackColor={{ true: colors.accent, false: colors.glassStrong }}
+            />
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.row}>
+            <Text style={styles.rowLabel}>Keep screen awake during focus</Text>
+            <Switch
+              testID={TID.settings.keepAwakeToggle}
+              accessibilityLabel="Keep screen awake during focus"
+              value={settings.keepAwake}
+              onValueChange={v => updateSettings({ keepAwake: v })}
+              trackColor={{ true: colors.accent, false: colors.glassStrong }}
+            />
+          </View>
         </View>
 
         <Pressable
@@ -85,7 +112,8 @@ export function SettingsScreen() {
           accessibilityLabel="Reset all data"
           accessibilityRole="button"
           onPress={() => setConfirmReset(true)}
-          style={styles.dangerButton}>
+          style={styles.dangerButton}
+        >
           <Text style={styles.dangerText}>Reset all data</Text>
         </Pressable>
 
@@ -95,12 +123,17 @@ export function SettingsScreen() {
             accessibilityLabel="Seed demo data"
             accessibilityRole="button"
             onPress={seedDemoData}
-            style={styles.devButton}>
+            style={styles.devButton}
+          >
             <Text style={styles.devText}>Seed demo data (debug only)</Text>
           </Pressable>
         ) : null}
 
-        <Text style={styles.version} testID={TID.settings.version} accessibilityLabel={`Version ${version}`}>
+        <Text
+          style={styles.version}
+          testID={TID.settings.version}
+          accessibilityLabel={`Version ${version}`}
+        >
           Version {version}
         </Text>
       </ScrollView>
@@ -121,39 +154,62 @@ export function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing.lg, gap: spacing.sm },
-  section: { ...typography.caption, marginTop: spacing.md },
+  safe: { flex: 1 },
+  content: { padding: spacing.lg, gap: spacing.sm, paddingBottom: spacing.xl },
+  section: {
+    ...typography.caption,
+    marginTop: spacing.md,
+    textTransform: 'uppercase',
+  },
   nameRow: { flexDirection: 'row', gap: spacing.sm },
   input: {
+    ...glassCard,
     flex: 1,
-    backgroundColor: colors.surface,
     color: colors.text,
-    borderRadius: 12,
     padding: spacing.md,
     fontSize: 16,
+    fontFamily: fonts.regular,
   },
-  saveButton: { backgroundColor: colors.accent, borderRadius: 12, paddingHorizontal: spacing.md, justifyContent: 'center' },
-  saveText: { color: colors.background, fontWeight: '600' },
-  disabled: { opacity: 0.4 },
-  error: { color: colors.danger },
+  saveButton: {
+    backgroundColor: colors.primary,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    justifyContent: 'center',
+  },
+  saveText: { color: colors.onPrimary, fontFamily: fonts.medium },
+  disabled: { opacity: 0.35 },
+  error: { color: colors.danger, fontFamily: fonts.regular },
+  card: { ...glassCard, paddingHorizontal: spacing.md, marginTop: spacing.md },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-    marginTop: spacing.sm,
+    paddingVertical: spacing.md,
   },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.glassBorder,
+  },
+  rowLabel: { ...typography.body, flex: 1, marginRight: spacing.md },
   dangerButton: {
     marginTop: spacing.xl,
     borderWidth: 1,
     borderColor: colors.danger,
-    borderRadius: 24,
+    borderRadius: radius.pill,
     padding: spacing.md,
     alignItems: 'center',
   },
-  dangerText: { color: colors.danger, fontSize: 16 },
-  devButton: { borderRadius: 24, padding: spacing.md, alignItems: 'center', backgroundColor: colors.surface },
-  devText: { color: colors.muted },
-  version: { ...typography.caption, textAlign: 'center', marginTop: spacing.lg },
+  dangerText: { color: colors.danger, fontSize: 16, fontFamily: fonts.regular },
+  devButton: {
+    ...glassCard,
+    borderRadius: radius.pill,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  devText: { color: colors.muted, fontFamily: fonts.regular },
+  version: {
+    ...typography.caption,
+    textAlign: 'center',
+    marginTop: spacing.lg,
+  },
 });

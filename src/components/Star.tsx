@@ -23,7 +23,12 @@ interface StarProps {
   onFallEnd?(): void;
 }
 
-export function Star({ brightness, falling = false, flash = false, onFallEnd }: StarProps) {
+export function Star({
+  brightness,
+  falling = false,
+  flash = false,
+  onFallEnd,
+}: StarProps) {
   const glow = useSharedValue(brightness);
   const scale = useSharedValue(1);
   const fall = useSharedValue(0);
@@ -35,7 +40,10 @@ export function Star({ brightness, falling = false, flash = false, onFallEnd }: 
   useEffect(() => {
     if (!flash) return;
     glow.value = 1;
-    scale.value = withSequence(withTiming(1.35, { duration: 250 }), withTiming(1, { duration: 500 }));
+    scale.value = withSequence(
+      withTiming(1.35, { duration: 250 }),
+      withTiming(1, { duration: 500 }),
+    );
   }, [flash, glow, scale]);
 
   useEffect(() => {
@@ -43,9 +51,13 @@ export function Star({ brightness, falling = false, flash = false, onFallEnd }: 
       fall.value = 0;
       return;
     }
-    fall.value = withTiming(1, { duration: FALL_MS, easing: Easing.in(Easing.quad) }, finished => {
-      if (finished && onFallEnd) scheduleOnRN(onFallEnd);
-    });
+    fall.value = withTiming(
+      1,
+      { duration: FALL_MS, easing: Easing.in(Easing.quad) },
+      finished => {
+        if (finished && onFallEnd) scheduleOnRN(onFallEnd);
+      },
+    );
   }, [falling, fall, onFallEnd]);
 
   const containerStyle = useAnimatedStyle(() => ({
@@ -56,13 +68,16 @@ export function Star({ brightness, falling = false, flash = false, onFallEnd }: 
       { scale: scale.value * (1 - fall.value * 0.6) },
     ],
   }));
-  const glowStyle = useAnimatedStyle(() => ({ opacity: 0.15 + glow.value * 0.85 }));
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: 0.15 + glow.value * 0.85,
+  }));
 
   return (
     <Animated.View
       style={[styles.container, containerStyle]}
       testID={TID.focus.star}
-      accessibilityLabel={`Star ${Math.round(brightness * 100)} percent lit`}>
+      accessibilityLabel={`Star ${Math.round(brightness * 100)} percent lit`}
+    >
       <Animated.View style={[StyleSheet.absoluteFill, glowStyle]}>
         <Svg width={SIZE} height={SIZE}>
           <Defs>

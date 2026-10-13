@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, fonts, radius, spacing } from '../theme/theme';
 
 interface ChipProps {
   label: string;
@@ -10,7 +10,13 @@ interface ChipProps {
   accessibilityLabel: string;
 }
 
-export function Chip({ label, selected, onPress, testID, accessibilityLabel }: ChipProps) {
+export function Chip({
+  label,
+  selected,
+  onPress,
+  testID,
+  accessibilityLabel,
+}: ChipProps) {
   return (
     <Pressable
       testID={testID}
@@ -18,8 +24,11 @@ export function Chip({ label, selected, onPress, testID, accessibilityLabel }: C
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={[styles.chip, selected && styles.selected]}>
-      <Text style={[styles.text, selected && styles.selectedText]}>{label}</Text>
+      style={[styles.chip, selected && styles.selected]}
+    >
+      <Text style={[styles.text, selected && styles.selectedText]}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -28,12 +37,16 @@ const styles = StyleSheet.create({
   chip: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    borderRadius: 20,
-    backgroundColor: colors.surface,
+    borderRadius: radius.pill,
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
     marginRight: spacing.sm,
     alignSelf: 'flex-start',
+    minWidth: 52,
+    alignItems: 'center',
   },
-  selected: { backgroundColor: colors.accent },
-  text: { color: colors.text, fontSize: 15 },
-  selectedText: { color: colors.background, fontWeight: '600' },
+  selected: { backgroundColor: colors.primary, borderColor: colors.primary },
+  text: { color: colors.text, fontSize: 15, fontFamily: fonts.regular },
+  selectedText: { color: colors.onPrimary, fontFamily: fonts.medium },
 });

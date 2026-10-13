@@ -1,7 +1,20 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { generateDemoSessions } from '../domain/demo';
 import { makeId } from '../domain/id';
-import { completeSession, failSession, remainingMs, restoreActiveSession } from '../domain/timer';
+import {
+  completeSession,
+  failSession,
+  remainingMs,
+  restoreActiveSession,
+} from '../domain/timer';
 import {
   DEFAULT_SETTINGS,
   type ActiveSession,
@@ -39,7 +52,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [activeSession, setActiveSession] = useState<ActiveSession | null>(null);
+  const [activeSession, setActiveSession] = useState<ActiveSession | null>(
+    null,
+  );
   const [toast, setToast] = useState<string | null>(null);
 
   // Refs mirror state so async actions never work on a stale snapshot.
@@ -73,7 +88,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         storage.loadActiveSession(),
       ]);
       const restored = restoreActiveSession(active, new Date(), makeId());
-      const allSessions = restored.completed ? [...list, restored.completed] : list;
+      const allSessions = restored.completed
+        ? [...list, restored.completed]
+        : list;
       setUser(u);
       setSettings(s);
       setSessions(allSessions);
@@ -126,7 +143,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         await persist(() => storage.saveSettings(next));
       },
       async startSession(plannedMin, intention) {
-        const a = { startedAt: new Date().toISOString(), plannedMin, intention };
+        const a = {
+          startedAt: new Date().toISOString(),
+          plannedMin,
+          intention,
+        };
         activeRef.current = a;
         setActiveSession(a);
         await persist(() => storage.saveActiveSession(a));
@@ -159,7 +180,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
       },
     }),
-    [ready, user, settings, sessions, activeSession, showToast, persist, addSession],
+    [
+      ready,
+      user,
+      settings,
+      sessions,
+      activeSession,
+      showToast,
+      persist,
+      addSession,
+    ],
   );
 
   return (

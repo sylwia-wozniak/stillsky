@@ -4,9 +4,19 @@ import { INTENTIONS, type Intention } from '../domain/types';
 import { TID } from '../testIds';
 import { Chip } from './Chip';
 
-export function IntentionChips({ value, onChange }: { value: Intention; onChange(intention: Intention): void }) {
+export function IntentionChips({
+  value,
+  onChange,
+}: {
+  value: Intention;
+  onChange(intention: Intention): void;
+}) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={{ flexGrow: 0 }}
+    >
       {INTENTIONS.map(t => (
         <Chip
           key={t.id}

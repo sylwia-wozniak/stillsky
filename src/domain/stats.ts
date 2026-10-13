@@ -12,7 +12,10 @@ export interface Stats {
 }
 
 /** Local-time range [start, end) of the period containing `now`. Weeks start on Monday. */
-export function periodRange(period: Period, now: Date): { start: Date; end: Date } {
+export function periodRange(
+  period: Period,
+  now: Date,
+): { start: Date; end: Date } {
   const y = now.getFullYear();
   const m = now.getMonth();
   const d = now.getDate();
@@ -21,7 +24,10 @@ export function periodRange(period: Period, now: Date): { start: Date; end: Date
   }
   if (period === 'week') {
     const daysSinceMonday = (now.getDay() + 6) % 7;
-    return { start: new Date(y, m, d - daysSinceMonday), end: new Date(y, m, d - daysSinceMonday + 7) };
+    return {
+      start: new Date(y, m, d - daysSinceMonday),
+      end: new Date(y, m, d - daysSinceMonday + 7),
+    };
   }
   return { start: new Date(y, m, 1), end: new Date(y, m + 1, 1) };
 }
@@ -38,7 +44,11 @@ function barIndex(period: Period, date: Date): number {
   return date.getDate() - 1;
 }
 
-export function computeStats(sessions: Session[], period: Period, now: Date): Stats {
+export function computeStats(
+  sessions: Session[],
+  period: Period,
+  now: Date,
+): Stats {
   const { start, end } = periodRange(period, now);
   const stats: Stats = {
     totalMin: 0,
@@ -63,7 +73,8 @@ export function computeStats(sessions: Session[], period: Period, now: Date): St
   }
 
   const finished = stats.completed + stats.failed;
-  stats.successRate = finished === 0 ? null : Math.round((stats.completed / finished) * 100);
+  stats.successRate =
+    finished === 0 ? null : Math.round((stats.completed / finished) * 100);
   return stats;
 }
 

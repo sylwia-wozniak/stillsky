@@ -3,7 +3,10 @@ import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { activateKeepAwake, deactivateKeepAwake } from '@sayem314/react-native-keep-awake';
+import {
+  activateKeepAwake,
+  deactivateKeepAwake,
+} from '@sayem314/react-native-keep-awake';
 import type { TabParamList } from '../app/RootNavigator';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { DurationPicker } from '../components/DurationPicker';
@@ -16,13 +19,21 @@ import { durationOptions } from '../domain/validation';
 import { playChime } from '../sound';
 import { useApp } from '../state/AppProvider';
 import { TID } from '../testIds';
-import { colors, spacing, typography } from '../theme/theme';
+import {
+  colors,
+  fonts,
+  glassCard,
+  radius,
+  spacing,
+  typography,
+} from '../theme/theme';
 
 type Nav = BottomTabNavigationProp<TabParamList, 'Focus'>;
 
 export function FocusScreen() {
   const navigation = useNavigation<Nav>();
-  const { user, settings, activeSession, startSession, giveUp, finishIfDue } = useApp();
+  const { user, settings, activeSession, startSession, giveUp, finishIfDue } =
+    useApp();
   const options = durationOptions(__DEV__);
   const [duration, setDuration] = useState(settings.defaultDurationMin);
   const [intention, setIntention] = useState<Intention>('work');
@@ -40,7 +51,9 @@ export function FocusScreen() {
 
   // Hide the tab bar while focusing.
   useEffect(() => {
-    navigation.setOptions({ tabBarStyle: running ? { display: 'none' } : undefined });
+    navigation.setOptions({
+      tabBarStyle: running ? { display: 'none' } : undefined,
+    });
   }, [navigation, running]);
 
   useEffect(() => {
@@ -63,7 +76,10 @@ export function FocusScreen() {
     if (!running) return;
     tick();
     const id = setInterval(tick, 1000);
-    const sub = AppState.addEventListener('change', s => s === 'active' && tick());
+    const sub = AppState.addEventListener(
+      'change',
+      s => s === 'active' && tick(),
+    );
     return () => {
       clearInterval(id);
       sub.remove();
@@ -88,7 +104,8 @@ export function FocusScreen() {
           <Text
             style={typography.title}
             testID={TID.focus.completedMessage}
-            accessibilityLabel="You earned a star">
+            accessibilityLabel="You earned a star"
+          >
             You earned a star ✨
           </Text>
           <View style={styles.row}>
@@ -100,7 +117,8 @@ export function FocusScreen() {
               onPress={() => {
                 setJustCompleted(false);
                 navigation.navigate('Sky');
-              }}>
+              }}
+            >
               <Text style={styles.secondaryText}>View in sky</Text>
             </Pressable>
             <Pressable
@@ -108,7 +126,8 @@ export function FocusScreen() {
               accessibilityLabel="Done"
               accessibilityRole="button"
               style={styles.button}
-              onPress={() => setJustCompleted(false)}>
+              onPress={() => setJustCompleted(false)}
+            >
               <Text style={styles.buttonText}>Done</Text>
             </Pressable>
           </View>
@@ -124,7 +143,11 @@ export function FocusScreen() {
         <View style={styles.center}>
           <Text style={typography.caption}>Stay with it…</Text>
           <Star brightness={progress(activeSession, now)} />
-          <Text style={typography.timer} testID={TID.focus.timerText} accessibilityLabel={left}>
+          <Text
+            style={typography.timer}
+            testID={TID.focus.timerText}
+            accessibilityLabel={left}
+          >
             {left}
           </Text>
           <Pressable
@@ -132,7 +155,8 @@ export function FocusScreen() {
             accessibilityLabel="Give up"
             accessibilityRole="button"
             style={[styles.button, styles.secondary]}
-            onPress={() => setConfirmGiveUp(true)}>
+            onPress={() => setConfirmGiveUp(true)}
+          >
             <Text style={styles.secondaryText}>Give up</Text>
           </Pressable>
         </View>
@@ -151,11 +175,15 @@ export function FocusScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.idle}>
-        <Text style={typography.heading} testID={TID.focus.greeting} accessibilityLabel={greet}>
+        <Text
+          style={typography.heading}
+          testID={TID.focus.greeting}
+          accessibilityLabel={greet}
+        >
           {greet}
         </Text>
         <Star brightness={0} falling={falling} onFallEnd={onFallEnd} />
-        <Text style={styles.label}>Duration</Text>
+        <Text style={styles.label}>Duration · minutes</Text>
         <DurationPicker
           options={options}
           value={duration}
@@ -169,7 +197,8 @@ export function FocusScreen() {
           accessibilityLabel="Start"
           accessibilityRole="button"
           style={[styles.button, styles.start]}
-          onPress={() => startSession(duration, intention)}>
+          onPress={() => startSession(duration, intention)}
+        >
           <Text style={styles.buttonText}>Start</Text>
         </Pressable>
       </View>
@@ -178,20 +207,42 @@ export function FocusScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.lg, padding: spacing.lg },
+  safe: { flex: 1 },
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.lg,
+    padding: spacing.lg,
+  },
   idle: { flex: 1, padding: spacing.lg, gap: spacing.sm },
-  label: { ...typography.caption, marginTop: spacing.md },
+  label: {
+    ...typography.caption,
+    marginTop: spacing.md,
+    textTransform: 'uppercase',
+  },
   row: { flexDirection: 'row', gap: spacing.md },
   button: {
-    backgroundColor: colors.accent,
-    borderRadius: 24,
+    backgroundColor: colors.primary,
+    borderRadius: radius.pill,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
     alignItems: 'center',
   },
   start: { marginTop: 'auto', marginBottom: spacing.md },
-  buttonText: { color: colors.background, fontSize: 18, fontWeight: '600' },
-  secondary: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.muted },
-  secondaryText: { color: colors.text, fontSize: 18 },
+  buttonText: {
+    color: colors.onPrimary,
+    fontSize: 18,
+    fontFamily: fonts.medium,
+  },
+  secondary: {
+    ...glassCard,
+    borderRadius: radius.pill,
+    backgroundColor: colors.glass,
+  },
+  secondaryText: {
+    color: colors.text,
+    fontSize: 18,
+    fontFamily: fonts.regular,
+  },
 });
