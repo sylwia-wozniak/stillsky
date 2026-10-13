@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -18,6 +18,8 @@ export type TabParamList = { Focus: undefined; Sky: undefined; Stats: undefined;
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tabs = createBottomTabNavigator<TabParamList>();
 
+const TAB_ICONS: Record<keyof TabParamList, string> = { Focus: '✦', Sky: '☾', Stats: '▥', Settings: '⚙' };
+
 const theme: Theme = {
   ...DarkTheme,
   colors: {
@@ -33,11 +35,12 @@ const theme: Theme = {
 function MainTabs() {
   return (
     <Tabs.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
+        tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>{TAB_ICONS[route.name]}</Text>,
         tabBarActiveTintColor: colors.star,
         tabBarInactiveTintColor: colors.muted,
-      }}>
+      })}>
       <Tabs.Screen
         name="Focus"
         component={FocusScreen}
