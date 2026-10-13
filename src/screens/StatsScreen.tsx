@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BarChart } from '../components/BarChart';
 import { computeStats, formatMinutes, type Period } from '../domain/stats';
-import { TAGS } from '../domain/types';
+import { INTENTIONS } from '../domain/types';
 import { useApp } from '../state/AppProvider';
 import { TID } from '../testIds';
 import { colors, spacing, typography } from '../theme/theme';
@@ -85,15 +85,15 @@ export function StatsScreen() {
               labels={barLabels(period, stats.bars.length)}
               labelEvery={period === 'week' ? 1 : period === 'day' ? 3 : 5}
             />
-            <Text style={styles.section}>By tag</Text>
-            {TAGS.map(t => (
-              <View key={t.id} style={styles.tagRow}>
+            <Text style={styles.section}>By intention</Text>
+            {INTENTIONS.map(t => (
+              <View key={t.id} style={styles.intentionRow}>
                 <Text style={typography.body}>{t.label}</Text>
                 <Text
                   style={typography.body}
-                  testID={TID.stats.tagMinutes(t.id)}
-                  accessibilityLabel={formatMinutes(stats.tagMinutes[t.id])}>
-                  {formatMinutes(stats.tagMinutes[t.id])}
+                  testID={TID.stats.intentionMinutes(t.id)}
+                  accessibilityLabel={formatMinutes(stats.intentionMinutes[t.id])}>
+                  {formatMinutes(stats.intentionMinutes[t.id])}
                 </Text>
               </View>
             ))}
@@ -117,5 +117,5 @@ const styles = StyleSheet.create({
   tile: { width: '48%', backgroundColor: colors.surface, borderRadius: 12, padding: spacing.md, gap: 4 },
   tileValue: { fontSize: 24, fontWeight: '600', color: colors.star },
   section: { ...typography.caption, marginTop: spacing.md },
-  tagRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.xs },
+  intentionRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.xs },
 });

@@ -1,6 +1,6 @@
-export type Tag = 'work' | 'study' | 'reading' | 'other';
+export type Intention = 'work' | 'study' | 'reading' | 'other';
 
-export const TAGS: { id: Tag; label: string }[] = [
+export const INTENTIONS: { id: Intention; label: string }[] = [
   { id: 'work', label: 'Work' },
   { id: 'study', label: 'Study' },
   { id: 'reading', label: 'Reading' },
@@ -31,12 +31,12 @@ export interface Session {
   startedAt: string;
   endedAt: string;
   plannedMin: number;
-  tag: Tag;
+  intention: Intention;
   status: SessionStatus;
 }
 
 export interface ActiveSession {
   startedAt: string;
   plannedMin: number;
-  tag: Tag;
+  intention: Intention;
 }

@@ -1,4 +1,4 @@
-import { TAGS, type Session } from './types';
+import { INTENTIONS, type Session } from './types';
 import { durationOptions } from './validation';
 
 const DAY_MS = 86_400_000;
@@ -25,7 +25,7 @@ export function generateDemoSessions(now: Date, rand: () => number = Math.random
         startedAt: new Date(start).toISOString(),
         endedAt: new Date(start + (completed ? plannedMin : failedAfterMin) * 60_000).toISOString(),
         plannedMin,
-        tag: pick(TAGS).id,
+        intention: pick(INTENTIONS).id,
         status: completed ? 'completed' : 'failed',
       });
     }

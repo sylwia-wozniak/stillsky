@@ -9,7 +9,7 @@ import {
 } from '../../src/domain/timer';
 import type { ActiveSession } from '../../src/domain/types';
 
-const a: ActiveSession = { startedAt: '2026-10-13T10:00:00.000Z', plannedMin: 25, tag: 'work' };
+const a: ActiveSession = { startedAt: '2026-10-13T10:00:00.000Z', plannedMin: 25, intention: 'work' };
 const at = (iso: string) => new Date(iso);
 
 describe('remainingMs', () => {
@@ -55,7 +55,7 @@ describe('session results', () => {
       startedAt: a.startedAt,
       endedAt: '2026-10-13T10:25:00.000Z',
       plannedMin: 25,
-      tag: 'work',
+      intention: 'work',
       status: 'completed',
     });
   });
@@ -75,7 +75,7 @@ describe('restoreActiveSession', () => {
         startedAt: a.startedAt,
         endedAt: '2026-10-13T10:25:00.000Z',
         plannedMin: 25,
-        tag: 'work',
+        intention: 'work',
         status: 'completed',
       },
     });

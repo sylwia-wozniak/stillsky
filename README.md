@@ -99,7 +99,7 @@ cd android
 Every interactive or asserted element has a `testID` **and** an `accessibilityLabel`. All IDs live
 in [`src/testIds.ts`](src/testIds.ts) and follow `screen.element`, for example:
 
-`onboarding.nameInput`, `focus.startButton`, `focus.duration.25`, `focus.tag.study`,
+`onboarding.nameInput`, `focus.startButton`, `focus.duration.25`, `focus.intention.study`,
 `focus.timerText`, `dialog.confirmButton`, `sky.constellation.orion`, `stats.period.week`,
 `stats.totalTime`, `stats.bar.3`, `settings.soundToggle`, `settings.resetButton`, `tabs.sky`.
 

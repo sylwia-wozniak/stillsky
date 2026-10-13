@@ -1,4 +1,4 @@
-import type { Session, Tag } from './types';
+import type { Session, Intention } from './types';
 
 export type Period = 'day' | 'week' | 'month';
 
@@ -8,7 +8,7 @@ export interface Stats {
   failed: number;
   successRate: number | null;
   bars: number[];
-  tagMinutes: Record<Tag, number>;
+  intentionMinutes: Record<Intention, number>;
 }
 
 /** Local-time range [start, end) of the period containing `now`. Weeks start on Monday. */
@@ -46,7 +46,7 @@ export function computeStats(sessions: Session[], period: Period, now: Date): St
     failed: 0,
     successRate: null,
     bars: new Array(barCount(period, start)).fill(0),
-    tagMinutes: { work: 0, study: 0, reading: 0, other: 0 },
+    intentionMinutes: { work: 0, study: 0, reading: 0, other: 0 },
   };
 
   for (const s of sessions) {
@@ -59,7 +59,7 @@ export function computeStats(sessions: Session[], period: Period, now: Date): St
     stats.completed += 1;
     stats.totalMin += s.plannedMin;
     stats.bars[barIndex(period, started)] += s.plannedMin;
-    stats.tagMinutes[s.tag] += s.plannedMin;
+    stats.intentionMinutes[s.intention] += s.plannedMin;
   }
 
   const finished = stats.completed + stats.failed;

@@ -7,7 +7,7 @@ import {
   type ActiveSession,
   type Session,
   type Settings,
-  type Tag,
+  type Intention,
   type User,
 } from '../domain/types';
 import * as storage from '../storage/storage';
@@ -24,7 +24,7 @@ export interface AppContextValue {
   createUser(name: string): Promise<void>;
   renameUser(name: string): Promise<void>;
   updateSettings(patch: Partial<Settings>): Promise<void>;
-  startSession(plannedMin: number, tag: Tag): Promise<void>;
+  startSession(plannedMin: number, intention: Intention): Promise<void>;
   giveUp(): Promise<void>;
   finishIfDue(now: Date): Promise<Session | null>;
   seedDemoData(): Promise<void>;
@@ -125,8 +125,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSettings(next);
         await persist(() => storage.saveSettings(next));
       },
-      async startSession(plannedMin, tag) {
-        const a = { startedAt: new Date().toISOString(), plannedMin, tag };
+      async startSession(plannedMin, intention) {
+        const a = { startedAt: new Date().toISOString(), plannedMin, intention };
         activeRef.current = a;
         setActiveSession(a);
         await persist(() => storage.saveActiveSession(a));

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   DEFAULT_SETTINGS,
-  TAGS,
+  INTENTIONS,
   type ActiveSession,
   type Session,
   type Settings,
@@ -21,12 +21,21 @@ type Key = (typeof KEYS)[keyof typeof KEYS];
 
 const isObject = (d: unknown): d is Record<string, unknown> => typeof d === 'object' && d !== null;
 const isString = (v: unknown): v is string => typeof v === 'string';
-const isTag = (v: unknown) => TAGS.some(t => t.id === v);
+const isIntention = (v: unknown) => INTENTIONS.some(t => t.id === v);
 
 const isUser = (d: unknown): d is User => isObject(d) && isString(d.name) && isString(d.createdAt);
 
 const isActiveSession = (d: unknown): d is ActiveSession =>
-  isObject(d) && isString(d.startedAt) && typeof d.plannedMin === 'number' && isTag(d.tag);
+  isObject(d) && isString(d.startedAt) && typeof d.plannedMin === 'number' && isIntention(d.intention);
+
+/** Sessions saved before the Tag → Intention rename stored the field as `tag`. */
+function migrateLegacyTag(d: unknown): unknown {
+  if (isObject(d) && d.intention === undefined && d.tag !== undefined) {
+    const { tag, ...rest } = d;
+    return { ...rest, intention: tag };
+  }
+  return d;
+}
 
 const isSession = (d: unknown): d is Session =>
   isActiveSession(d) &&
@@ -83,7 +92,7 @@ export function saveSettings(s: Settings): Promise<void> {
 export async function loadSessions(): Promise<Session[]> {
   const d = await read(KEYS.sessions);
   if (!Array.isArray(d)) return [];
-  const valid = d.filter(isSession);
+  const valid = d.map(migrateLegacyTag).filter(isSession);
   if (valid.length !== d.length) {
     console.warn(`[storage] dropped ${d.length - valid.length} invalid session(s)`);
   }
@@ -95,7 +104,7 @@ export function saveSessions(s: Session[]): Promise<void> {
 }
 
 export async function loadActiveSession(): Promise<ActiveSession | null> {
-  const d = await read(KEYS.activeSession);
+  const d = migrateLegacyTag(await read(KEYS.activeSession));
   return isActiveSession(d) ? d : null;
 }
 

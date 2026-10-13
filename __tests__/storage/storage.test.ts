@@ -19,7 +19,7 @@ const validSession: Session = {
   startedAt: '2026-10-13T10:00:00.000Z',
   endedAt: '2026-10-13T10:25:00.000Z',
   plannedMin: 25,
-  tag: 'work',
+  intention: 'work',
   status: 'completed',
 };
 
@@ -82,7 +82,7 @@ describe('sessions', () => {
 
 describe('active session', () => {
   it('round-trips and is removed when saved as null', async () => {
-    const a = { startedAt: '2026-10-13T10:00:00.000Z', plannedMin: 25, tag: 'work' as const };
+    const a = { startedAt: '2026-10-13T10:00:00.000Z', plannedMin: 25, intention: 'work' as const };
     await saveActiveSession(a);
     expect(await loadActiveSession()).toEqual(a);
     await saveActiveSession(null);
@@ -96,10 +96,32 @@ describe('clearAll', () => {
     await saveUser(user);
     await saveSettings(DEFAULT_SETTINGS);
     await saveSessions([validSession]);
-    await saveActiveSession({ startedAt: validSession.startedAt, plannedMin: 25, tag: 'work' });
+    await saveActiveSession({ startedAt: validSession.startedAt, plannedMin: 25, intention: 'work' });
     await clearAll();
     for (const key of ['user', 'settings', 'sessions', 'activeSession']) {
       expect(await AsyncStorage.getItem(key)).toBeNull();
     }
+  });
+});
+
+describe('legacy data', () => {
+  it('migrates sessions stored with the old "tag" field to "intention"', async () => {
+    const { intention, ...rest } = validSession;
+    await AsyncStorage.setItem(
+      'sessions',
+      JSON.stringify({ schemaVersion: 1, data: [{ ...rest, tag: intention }] }),
+    );
+    expect(await loadSessions()).toEqual([validSession]);
+  });
+  it('migrates an active session stored with the old "tag" field', async () => {
+    await AsyncStorage.setItem(
+      'activeSession',
+      JSON.stringify({ schemaVersion: 1, data: { startedAt: validSession.startedAt, plannedMin: 25, tag: 'study' } }),
+    );
+    expect(await loadActiveSession()).toEqual({
+      startedAt: validSession.startedAt,
+      plannedMin: 25,
+      intention: 'study',
+    });
   });
 });

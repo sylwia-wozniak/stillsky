@@ -15,7 +15,7 @@ function session(i: number, status: SessionStatus = 'completed'): Session {
     startedAt: start.toISOString(),
     endedAt: new Date(start.getTime() + 25 * 60_000).toISOString(),
     plannedMin: 25,
-    tag: 'work',
+    intention: 'work',
     status,
   };
 }

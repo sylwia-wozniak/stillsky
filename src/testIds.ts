@@ -1,5 +1,5 @@
 import type { Period } from './domain/stats';
-import type { Tag } from './domain/types';
+import type { Intention } from './domain/types';
 
 // Single source of truth for every testID. Naming: `screen.element`.
 export const TID = {
@@ -24,7 +24,7 @@ export const TID = {
     viewInSkyButton: 'focus.viewInSkyButton',
     doneButton: 'focus.doneButton',
     duration: (m: number) => `focus.duration.${m}`,
-    tag: (t: Tag) => `focus.tag.${t}`,
+    intention: (t: Intention) => `focus.intention.${t}`,
   },
   dialog: {
     container: 'dialog.container',
@@ -52,7 +52,7 @@ export const TID = {
     successRate: 'stats.successRate',
     emptyState: 'stats.emptyState',
     bar: (i: number) => `stats.bar.${i}`,
-    tagMinutes: (t: Tag) => `stats.tag.${t}`,
+    intentionMinutes: (t: Intention) => `stats.intention.${t}`,
   },
   settings: {
     nameInput: 'settings.nameInput',

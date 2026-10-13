@@ -31,9 +31,9 @@ describe('generateDemoSessions', () => {
     expect(sessions.every(s => allowed.includes(s.plannedMin))).toBe(true);
   });
 
-  it('mixes statuses and tags', () => {
+  it('mixes statuses and intentions', () => {
     expect(new Set(sessions.map(s => s.status)).size).toBe(2);
-    expect(new Set(sessions.map(s => s.tag)).size).toBeGreaterThanOrEqual(3);
+    expect(new Set(sessions.map(s => s.intention)).size).toBeGreaterThanOrEqual(3);
   });
 
   it('completes roughly 80% of sessions', () => {

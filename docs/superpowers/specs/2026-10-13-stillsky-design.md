@@ -66,7 +66,7 @@ Navigation: if no user is stored → Onboarding. Otherwise → bottom tabs **Foc
 States:
 - **Idle**: greeting ("Good evening, {name}" — morning/afternoon/evening by local hour), dim star,
   duration picker (10–120 min, 5-min steps, initial value = `settings.defaultDurationMin`),
-  tag chips (Work / Study / Reading / Other, default Work), **Start** button.
+  intention chips (Work / Study / Reading / Other, default Work), **Start** button.
 - **Running**: `MM:SS` countdown, star brightness interpolates 0→1 with progress, **Give up** button.
   Bottom tabs hidden. Keep-awake active if `settings.keepAwake`.
 - **Give up** → ConfirmDialog "Your star will fall. Give up?" [Cancel] [Give up].
@@ -92,7 +92,7 @@ States:
   (completed / (completed + failed), shown as "—" when no sessions).
 - Bar chart of completed focus minutes: per hour (Day, 24 bars), per weekday (Week, 7 bars),
   per day of month (Month, 28–31 bars). A session is bucketed by its `startedAt`.
-- Tag breakdown: minutes per tag for the period.
+- Intention breakdown: minutes per intention for the period.
 - Empty state when the period has no sessions.
 
 ### 4.5 Settings
@@ -110,7 +110,7 @@ States:
 AsyncStorage keys, each a JSON value wrapped as `{ schemaVersion: 1, data: ... }`:
 
 ```ts
-type Tag = 'work' | 'study' | 'reading' | 'other';
+type Intention = 'work' | 'study' | 'reading' | 'other';
 
 // key: "user"
 interface User { name: string; createdAt: string /* ISO */ }
@@ -122,11 +122,11 @@ interface Settings { defaultDurationMin: number; sound: boolean; keepAwake: bool
 // key: "sessions"
 interface Session {
   id: string; startedAt: string; endedAt: string;
-  plannedMin: number; tag: Tag; status: 'completed' | 'failed';
+  plannedMin: number; intention: Intention; status: 'completed' | 'failed';
 }
 
 // key: "activeSession" (absent when idle)
-interface ActiveSession { startedAt: string; plannedMin: number; tag: Tag }
+interface ActiveSession { startedAt: string; plannedMin: number; intention: Intention }
 ```
 
 - Lit stars and all stats are **derived** from `sessions`; nothing derived is stored.
@@ -144,7 +144,7 @@ interface ActiveSession { startedAt: string; plannedMin: number; tag: Tag }
 - Every interactive or asserted element has a `testID` **and** an `accessibilityLabel`.
 - All testIDs are defined in `src/testIds.ts`; components never use string literals for testIDs.
 - Naming: `screen.element`, e.g. `onboarding.nameInput`, `onboarding.beginButton`,
-  `focus.startButton`, `focus.giveUpButton`, `focus.timerText`, `focus.duration.25`, `focus.tag.study`,
+  `focus.startButton`, `focus.giveUpButton`, `focus.timerText`, `focus.duration.25`, `focus.intention.study`,
   `dialog.confirmButton`, `dialog.cancelButton`, `sky.constellation.orion`, `sky.emptyState`,
   `stats.period.week`, `stats.totalTime`, `stats.bar.3`, `settings.soundToggle`,
   `settings.resetButton`, `settings.resetInput`, `tabs.focus`, etc.

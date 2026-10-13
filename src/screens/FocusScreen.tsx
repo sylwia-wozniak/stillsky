@@ -8,10 +8,10 @@ import type { TabParamList } from '../app/RootNavigator';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { DurationPicker } from '../components/DurationPicker';
 import { Star } from '../components/Star';
-import { TagChips } from '../components/TagChips';
+import { IntentionChips } from '../components/IntentionChips';
 import { greeting } from '../domain/greeting';
 import { formatMMSS, progress, remainingMs } from '../domain/timer';
-import type { Tag } from '../domain/types';
+import type { Intention } from '../domain/types';
 import { durationOptions } from '../domain/validation';
 import { playChime } from '../sound';
 import { useApp } from '../state/AppProvider';
@@ -25,7 +25,7 @@ export function FocusScreen() {
   const { user, settings, activeSession, startSession, giveUp, finishIfDue } = useApp();
   const options = durationOptions(__DEV__);
   const [duration, setDuration] = useState(settings.defaultDurationMin);
-  const [tag, setTag] = useState<Tag>('work');
+  const [intention, setIntention] = useState<Intention>('work');
   const [now, setNow] = useState(() => new Date());
   const [confirmGiveUp, setConfirmGiveUp] = useState(false);
   const [falling, setFalling] = useState(false);
@@ -162,14 +162,14 @@ export function FocusScreen() {
           onChange={setDuration}
           testIdFor={TID.focus.duration}
         />
-        <Text style={styles.label}>Tag</Text>
-        <TagChips value={tag} onChange={setTag} />
+        <Text style={styles.label}>Intention</Text>
+        <IntentionChips value={intention} onChange={setIntention} />
         <Pressable
           testID={TID.focus.startButton}
           accessibilityLabel="Start"
           accessibilityRole="button"
           style={[styles.button, styles.start]}
-          onPress={() => startSession(duration, tag)}>
+          onPress={() => startSession(duration, intention)}>
           <Text style={styles.buttonText}>Start</Text>
         </Pressable>
       </View>

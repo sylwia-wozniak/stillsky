@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { computeStats, formatMinutes, periodRange } from '../../src/domain/stats';
-import type { Session, SessionStatus, Tag } from '../../src/domain/types';
+import type { Session, SessionStatus, Intention } from '../../src/domain/types';
 
 // npm test runs with TZ=UTC, so local-time constructors are stable.
-function session(start: Date, plannedMin: number, tag: Tag, status: SessionStatus): Session {
+function session(start: Date, plannedMin: number, intention: Intention, status: SessionStatus): Session {
   return {
     id: start.toISOString(),
     startedAt: start.toISOString(),
     endedAt: new Date(start.getTime() + plannedMin * 60_000).toISOString(),
     plannedMin,
-    tag,
+    intention,
     status,
   };
 }
@@ -23,7 +23,7 @@ describe('computeStats', () => {
       failed: 0,
       successRate: null,
       bars: [0, 0, 0, 0, 0, 0, 0],
-      tagMinutes: { work: 0, study: 0, reading: 0, other: 0 },
+      intentionMinutes: { work: 0, study: 0, reading: 0, other: 0 },
     });
   });
 
@@ -40,8 +40,8 @@ describe('computeStats', () => {
     expect(s.bars).toHaveLength(24);
     expect(s.bars[9]).toBe(25);
     expect(s.bars[11]).toBe(0);
-    expect(s.tagMinutes.study).toBe(25);
-    expect(s.tagMinutes.work).toBe(0);
+    expect(s.intentionMinutes.study).toBe(25);
+    expect(s.intentionMinutes.work).toBe(0);
   });
 
   it('puts Sunday 23:59 in the current week and Monday 00:00 in the next', () => {
