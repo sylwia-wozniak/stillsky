@@ -24,7 +24,7 @@ It has two goals:
 - Navigation: **React Navigation** (native stack + bottom tabs).
 - Storage: `@react-native-async-storage/async-storage`.
 - Graphics/animation: `react-native-svg`, `react-native-reanimated`.
-- Keep-awake: `react-native-keep-awake`. Chime: `react-native-sound`.
+- Keep-awake: `@sayem314/react-native-keep-awake` (maintained fork of `react-native-keep-awake`). Chime: `react-native-sound`.
 - Charts: hand-made SVG bar chart (no chart library).
 - Unit tests: **Jest** (bundled with RN CLI template).
 - Targets: iOS Simulator (Xcode, already installed) and Android Emulator (Android Studio + SDK
