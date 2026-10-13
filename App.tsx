@@ -1,15 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { RootNavigator } from './src/app/RootNavigator';
+import { AppProvider } from './src/state/AppProvider';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Stillsky</Text>
-    </View>
+    <SafeAreaProvider>
+      <StatusBar barStyle="light-content" />
+      <AppProvider>
+        <RootNavigator />
+      </AppProvider>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B1026' },
-  title: { color: '#E8ECFF', fontSize: 32 },
-});
