@@ -26,7 +26,7 @@ It has two goals:
 - Graphics/animation: `react-native-svg`, `react-native-reanimated`.
 - Keep-awake: `@sayem314/react-native-keep-awake` (maintained fork of `react-native-keep-awake`). Chime: `react-native-sound`.
 - Charts: hand-made SVG bar chart (no chart library).
-- Unit tests: **Jest** (bundled with RN CLI template).
+- Unit tests: **Vitest** for pure TS (`src/domain`, `src/storage`); the RN template's Jest setup is removed. Metro stays the app bundler (Vite cannot bundle React Native).
 - Targets: iOS Simulator (Xcode, already installed) and Android Emulator (Android Studio + SDK
   must be installed; `adb` currently not on PATH).
 
@@ -48,7 +48,7 @@ Stillsky/
 │   ├── state/          AppProvider (React Context): user, settings, sessions, activeSession
 │   ├── theme/          night-sky palette, typography, spacing
 │   └── testIds.ts      single source of truth for every testID
-└── __tests__/          Jest tests for src/domain and src/storage
+└── __tests__/          Vitest tests for src/domain and src/storage
 ```
 
 Rule: screens and components contain no business logic; all rules live in `domain/` and are unit-tested.
@@ -153,21 +153,21 @@ interface ActiveSession { startedAt: string; plannedMin: number; tag: Tag }
 - Asserted values (timer, stats totals, star counts) are rendered as text elements with their own IDs.
 - Debug-only aids: 1-minute duration, Seed demo data.
 - README documents how to build a debug `.app` for the iOS Simulator and a debug `.apk` for Android,
-  with output paths and the bundle ID / package name (`com.sylwia.stillsky`) for Appium capabilities.
+  with output paths and the bundle ID / package name (`com.stillsky`) for Appium capabilities.
 
 ## 8. Unit testing (in scope)
 
-Jest tests for:
+Vitest tests for:
 - `timer.ts`: start, remaining-time calculation, completion, give-up, restore after relaunch.
 - `constellations.ts`: star N → (constellation, index); completion detection; overflow stars.
 - `stats.ts`: period filtering, bucketing, totals, success rate, tag breakdown, empty input.
 - `validation.ts`: name and duration bounds.
-- `storage/`: defaults on missing/corrupt data, round-trip read/write (AsyncStorage jest mock).
+- `storage/`: defaults on missing/corrupt data, round-trip read/write (in-memory AsyncStorage mock via `vi.mock`).
 
 ## 9. Success criteria
 
 - App builds and runs on iOS Simulator and Android Emulator from the same codebase.
 - Full flow works: onboarding → focus session (complete and give up) → star appears in Sky →
   Stats reflect it → Settings changes persist across relaunch → Reset returns to onboarding.
-- All Jest tests pass.
+- All Vitest tests pass.
 - testIDs visible in Appium Inspector on both platforms for every element listed in section 7.
