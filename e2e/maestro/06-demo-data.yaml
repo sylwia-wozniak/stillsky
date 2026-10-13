@@ -1,0 +1,14 @@
+appId: com.stillsky
+name: Seeded demo data fills Sky and Stats (debug builds only)
+tags: [smoke, debug-only]
+---
+- runFlow: common/fresh-start.yaml
+- tapOn: { id: tabs.settings }
+- tapOn: { id: settings.seedButton }
+- tapOn: { id: tabs.sky }
+- assertNotVisible: { id: sky.emptyState }
+- assertVisible: { id: sky.constellation.littleDipper }
+- tapOn: { id: tabs.stats }
+- tapOn: { id: stats.period.month }
+- assertNotVisible: { id: stats.emptyState }
+- assertVisible: { id: stats.totalTime }

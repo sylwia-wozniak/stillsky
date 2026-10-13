@@ -1,0 +1,15 @@
+appId: com.stillsky
+name: A session that ended while the app was killed counts as completed
+tags: [slow]
+---
+- runFlow: common/fresh-start.yaml
+- tapOn: { id: focus.duration.1 }
+- tapOn: { id: focus.startButton }
+- assertVisible: { id: focus.timerText }
+- stopApp
+- runFlow: common/wait-70s.yaml
+- launchApp
+- assertVisible: { id: focus.startButton }
+- assertNotVisible: { id: focus.timerText }
+- tapOn: { id: tabs.sky }
+- assertVisible: { id: sky.litCount, text: "1 star lit" }

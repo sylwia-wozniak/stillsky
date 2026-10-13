@@ -1,0 +1,9 @@
+# Clears all app data and completes onboarding as "Ada".
+appId: com.stillsky
+---
+- launchApp:
+    clearState: true
+- tapOn: { id: onboarding.nameInput }
+- inputText: "Ada"
+- tapOn: { id: onboarding.beginButton }
+- assertVisible: { id: tabs.focus }

@@ -1,0 +1,7 @@
+# Maestro has no plain sleep: wait for an element that never appears.
+appId: com.stillsky
+---
+- extendedWaitUntil:
+    visible: { id: "never.appears" }
+    timeout: 70000
+    optional: true

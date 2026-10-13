@@ -1,0 +1,21 @@
+appId: com.stillsky
+name: Onboarding validates the name and is skipped on relaunch
+tags: [smoke]
+---
+- launchApp:
+    clearState: true
+- assertVisible: { id: onboarding.beginButton }
+- tapOn: { id: onboarding.nameInput }
+- inputText: "   "
+- assertVisible: { id: onboarding.nameError }
+- tapOn: { id: onboarding.beginButton }   # disabled: nothing happens
+- assertVisible: { id: onboarding.nameInput }
+- eraseText: 5
+- inputText: "Ada"
+- tapOn: { id: onboarding.beginButton }
+- assertVisible: { id: tabs.focus }
+- assertVisible: { id: tabs.settings }
+- stopApp
+- launchApp
+- assertVisible: { id: tabs.sky }
+- assertNotVisible: { id: onboarding.nameInput }

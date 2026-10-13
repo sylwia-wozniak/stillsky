@@ -1,0 +1,37 @@
+appId: com.stillsky
+name: Settings persist across relaunch and Reset needs exact confirmation
+tags: [smoke]
+---
+- runFlow: common/fresh-start.yaml
+- tapOn: { id: tabs.settings }
+- tapOn: { id: settings.nameInput }
+- eraseText: 5
+- inputText: "Grace"
+- tapOn: { id: settings.saveNameButton }
+- hideKeyboard
+# 40 is off-screen: swipe the horizontal picker first
+- swipe:
+    from: { id: settings.duration.25 }
+    direction: LEFT
+- tapOn: { id: settings.duration.40 }
+- assertVisible: { id: settings.duration.40, selected: true }
+- tapOn: { id: settings.soundToggle }
+- assertVisible: { id: settings.soundToggle, checked: false }
+- stopApp
+- launchApp
+- assertVisible: { id: focus.greeting, text: ".*Grace" }
+- assertVisible: { id: focus.duration.40, selected: true }
+- tapOn: { id: tabs.settings }
+- assertVisible: { id: settings.soundToggle, checked: false }
+- assertVisible: { id: settings.keepAwakeToggle, checked: true }
+- scrollUntilVisible:
+    element: { id: settings.resetButton }
+- tapOn: { id: settings.resetButton }
+- tapOn: { id: dialog.input }
+- inputText: "reset"
+- assertVisible: { id: dialog.confirmButton, enabled: false }
+- eraseText: 5
+- inputText: "RESET"
+- assertVisible: { id: dialog.confirmButton, enabled: true }
+- tapOn: { id: dialog.confirmButton }
+- assertVisible: { id: onboarding.nameInput }

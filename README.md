@@ -114,6 +114,15 @@ in [`src/testIds.ts`](src/testIds.ts) and follow `screen.element`, for example:
 - **1-minute duration** in the Focus duration picker, so tests don't wait 10+ minutes.
 - **Seed demo data** in Settings: replaces your sessions with ~30 days of random history.
 
+## Maestro smoke flows
+
+[`e2e/maestro/`](e2e/maestro/) contains 7 Maestro flows covering every screen (debug build + Metro):
+
+```bash
+npm run e2e:maestro         # all flows (~6 min, includes real 1-minute sessions)
+npm run e2e:maestro:smoke   # fast subset (~2 min)
+```
+
 ## Good scenarios to automate
 
 - Onboarding validation (empty / whitespace / 21-character names)

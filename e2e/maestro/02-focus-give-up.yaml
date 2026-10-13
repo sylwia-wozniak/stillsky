@@ -1,0 +1,20 @@
+appId: com.stillsky
+name: Giving up asks for confirmation and makes the star fall
+tags: [smoke]
+---
+- runFlow: common/fresh-start.yaml
+- assertVisible: { id: focus.greeting, text: ".*Ada" }
+- assertVisible: { id: focus.duration.25, selected: true }
+- tapOn: { id: focus.duration.1 }
+- tapOn: { id: focus.intention.study }
+- tapOn: { id: focus.startButton }
+- assertVisible: { id: focus.timerText }
+- assertNotVisible: { id: tabs.sky }          # tab bar hidden while focusing
+- tapOn: { id: focus.giveUpButton }
+- assertVisible: { id: dialog.message, text: "Your star will fall. Give up?" }
+- tapOn: { id: dialog.cancelButton }
+- assertVisible: { id: focus.timerText }      # still running
+- tapOn: { id: focus.giveUpButton }
+- tapOn: { id: dialog.confirmButton }
+- assertVisible: { id: focus.startButton }
+- assertVisible: { id: tabs.sky }

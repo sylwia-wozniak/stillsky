@@ -1,0 +1,21 @@
+appId: com.stillsky
+name: Completing a 1-minute session lights the first star
+tags: [slow]
+---
+- runFlow: common/fresh-start.yaml
+- tapOn: { id: tabs.sky }
+- assertVisible: { id: sky.emptyState }
+- tapOn: { id: tabs.focus }
+- tapOn: { id: focus.duration.1 }
+- tapOn: { id: focus.startButton }
+- extendedWaitUntil:
+    visible: { id: focus.completedMessage }
+    timeout: 75000
+- tapOn: { id: focus.viewInSkyButton }
+- assertVisible: { id: sky.litCount, text: "1 star lit" }
+- tapOn: { id: sky.constellation.littleDipper }
+- assertVisible: { id: sky.cardName, text: "Little Dipper" }
+- assertVisible: { id: sky.cardProgress, text: "1/7 stars" }
+- assertVisible: { id: sky.cardDate, text: "In progress" }
+- tapOn: { id: sky.cardClose }
+- assertNotVisible: { id: sky.card }
