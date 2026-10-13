@@ -66,3 +66,10 @@ export function computeStats(sessions: Session[], period: Period, now: Date): St
   stats.successRate = finished === 0 ? null : Math.round((stats.completed / finished) * 100);
   return stats;
 }
+
+export function formatMinutes(min: number): string {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h === 0) return `${m}m`;
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeStats, periodRange } from '../../src/domain/stats';
+import { computeStats, formatMinutes, periodRange } from '../../src/domain/stats';
 import type { Session, SessionStatus, Tag } from '../../src/domain/types';
 
 // npm test runs with TZ=UTC, so local-time constructors are stable.
@@ -76,5 +76,16 @@ describe('periodRange', () => {
   });
   it('treats Sunday as the end of the week', () => {
     expect(periodRange('week', new Date(2026, 9, 18, 12)).start).toEqual(new Date(2026, 9, 12));
+  });
+});
+
+describe('formatMinutes', () => {
+  it.each([
+    [0, '0m'],
+    [25, '25m'],
+    [60, '1h'],
+    [85, '1h 25m'],
+  ])('formats %i as "%s"', (min, expected) => {
+    expect(formatMinutes(min)).toBe(expected);
   });
 });
