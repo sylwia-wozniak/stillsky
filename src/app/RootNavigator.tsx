@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import {
   DarkTheme,
   NavigationContainer,
@@ -13,6 +13,7 @@ import { FocusScreen } from '../screens/FocusScreen';
 import { SkyScreen } from '../screens/SkyScreen';
 import { StatsScreen } from '../screens/StatsScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { TabIcon } from '../components/TabIcon';
 import { TID } from '../testIds';
 import { colors, fonts, tabBarStyle } from '../theme/theme';
 
@@ -26,13 +27,6 @@ export type TabParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tabs = createBottomTabNavigator<TabParamList>();
-
-const TAB_ICONS: Record<keyof TabParamList, string> = {
-  Focus: '✦',
-  Sky: '☾',
-  Stats: '▥',
-  Settings: '⚙',
-};
 
 const theme: Theme = {
   ...DarkTheme,
@@ -58,9 +52,7 @@ function MainTabs() {
           fontSize: 11,
           letterSpacing: 0.3,
         },
-        tabBarIcon: ({ color }) => (
-          <Text style={{ color, fontSize: 20 }}>{TAB_ICONS[route.name]}</Text>
-        ),
+        tabBarIcon: ({ color }) => <TabIcon name={route.name} color={color} />,
         tabBarActiveTintColor: colors.star,
         tabBarInactiveTintColor: colors.muted,
       })}
