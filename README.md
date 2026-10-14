@@ -91,6 +91,8 @@ npm run e2e:maestro         # all Maestro flows (~8 min, includes real 1-minute 
 npm run e2e:maestro:smoke   # fast subset (~2 min)
 ```
 
+Suite timings per tool and platform are tracked in [e2e/BENCHMARKS.md](e2e/BENCHMARKS.md).
+
 Maestro runs against a debug build with Metro running. With both a simulator and an emulator
 open, pick one: `maestro --device emulator-5554 test e2e/maestro`.
 
