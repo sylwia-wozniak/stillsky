@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  KeyboardAvoidingView,
   Modal,
   Pressable,
   StyleSheet,
@@ -41,7 +42,7 @@ export function ConfirmDialog({
       animationType="fade"
       onRequestClose={onCancel}
     >
-      <View style={styles.backdrop}>
+      <KeyboardAvoidingView style={styles.backdrop} behavior="padding">
         <View style={styles.card} testID={TID.dialog.container}>
           <Text
             style={typography.body}
@@ -90,7 +91,7 @@ export function ConfirmDialog({
             </Pressable>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

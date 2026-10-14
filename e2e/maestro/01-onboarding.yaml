@@ -4,6 +4,8 @@ tags: [smoke]
 ---
 - launchApp:
     clearState: true
+    permissions:
+      all: allow   # Android debug builds ask for local-network access (Metro)
 - assertVisible: { id: onboarding.beginButton }
 - tapOn: { id: onboarding.nameInput }
 - inputText: "   "

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -31,7 +30,9 @@ export function OnboardingScreen() {
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        // Android 15+ is edge-to-edge, so the window no longer resizes for the keyboard:
+        // pad on both platforms to keep the hint and Begin button visible.
+        behavior="padding"
       >
         <Text style={styles.stars}>✦ · ✧ · ✦</Text>
         <Text style={typography.title}>Welcome to Stillsky</Text>
