@@ -14,7 +14,7 @@ import { SkyScreen } from '../screens/SkyScreen';
 import { StatsScreen } from '../screens/StatsScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { TID } from '../testIds';
-import { colors, fonts } from '../theme/theme';
+import { colors, fonts, tabBarStyle } from '../theme/theme';
 
 export type RootStackParamList = { Onboarding: undefined; Main: undefined };
 export type TabParamList = {
@@ -52,11 +52,7 @@ function MainTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         sceneStyle: { backgroundColor: 'transparent' },
-        tabBarStyle: {
-          backgroundColor: 'rgba(23,18,58,0.45)',
-          borderTopColor: colors.glassBorder,
-          elevation: 0,
-        },
+        tabBarStyle,
         tabBarLabelStyle: {
           fontFamily: fonts.regular,
           fontSize: 11,
@@ -74,7 +70,7 @@ function MainTabs() {
         component={FocusScreen}
         options={{
           tabBarButtonTestID: TID.tabs.focus,
-          tabBarAccessibilityLabel: 'Focus tab',
+          tabBarAccessibilityLabel: 'Focus',
         }}
       />
       <Tabs.Screen
@@ -82,7 +78,7 @@ function MainTabs() {
         component={SkyScreen}
         options={{
           tabBarButtonTestID: TID.tabs.sky,
-          tabBarAccessibilityLabel: 'Sky tab',
+          tabBarAccessibilityLabel: 'Sky',
         }}
       />
       <Tabs.Screen
@@ -90,7 +86,7 @@ function MainTabs() {
         component={StatsScreen}
         options={{
           tabBarButtonTestID: TID.tabs.stats,
-          tabBarAccessibilityLabel: 'Stats tab',
+          tabBarAccessibilityLabel: 'Stats',
         }}
       />
       <Tabs.Screen
@@ -98,7 +94,7 @@ function MainTabs() {
         component={SettingsScreen}
         options={{
           tabBarButtonTestID: TID.tabs.settings,
-          tabBarAccessibilityLabel: 'Settings tab',
+          tabBarAccessibilityLabel: 'Settings',
         }}
       />
     </Tabs.Navigator>

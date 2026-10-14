@@ -1,0 +1,17 @@
+appId: com.stillsky
+name: A Give-up dialog left open when the session completes does not reappear
+tags: [slow]
+---
+- runFlow: common/fresh-start.yaml
+- tapOn: { id: focus.duration.1 }
+- tapOn: { id: focus.startButton }
+- tapOn: { id: focus.giveUpButton }
+- assertVisible: { id: dialog.message }
+# leave the dialog open until the session finishes on its own
+- extendedWaitUntil:
+    visible: { id: focus.completedMessage }
+    timeout: 75000
+- tapOn: { id: focus.doneButton }
+- tapOn: { id: focus.startButton }
+- assertVisible: { id: focus.timerText }
+- assertNotVisible: { id: dialog.message }

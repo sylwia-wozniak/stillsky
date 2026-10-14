@@ -64,7 +64,7 @@ export function DurationPicker({
             selected={m === value}
             onPress={() => onChange(m)}
             testID={testIdFor(m)}
-            accessibilityLabel={`${m} minutes`}
+            accessibilityLabel={String(m)}
           />
         </View>
       ))}

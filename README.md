@@ -116,7 +116,7 @@ in [`src/testIds.ts`](src/testIds.ts) and follow `screen.element`, for example:
 
 ## Maestro smoke flows
 
-[`e2e/maestro/`](e2e/maestro/) contains 7 Maestro flows covering every screen (debug build + Metro):
+[`e2e/maestro/`](e2e/maestro/) contains 8 Maestro flows covering every screen (debug build + Metro):
 
 ```bash
 npm run e2e:maestro         # all flows (~6 min, includes real 1-minute sessions)

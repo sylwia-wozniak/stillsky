@@ -171,7 +171,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         await persist(() => storage.saveSessions(demo));
       },
       async resetAll() {
-        await persist(() => storage.clearAll());
+        // Only forget in-memory data once storage is really empty; otherwise old stars
+        // would reappear under a "fresh" account on the next launch.
+        if (!(await storage.resetStorage())) {
+          showToast(SAVE_ERROR);
+          return;
+        }
         sessionsRef.current = [];
         activeRef.current = null;
         setSessions([]);

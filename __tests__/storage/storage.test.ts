@@ -7,6 +7,7 @@ import {
   loadSessions,
   loadSettings,
   loadUser,
+  resetStorage,
   saveActiveSession,
   saveSessions,
   saveSettings,
@@ -123,5 +124,68 @@ describe('legacy data', () => {
       plannedMin: 25,
       intention: 'study',
     });
+  });
+});
+
+describe('well-typed but meaningless data', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  const storeActive = (data: object) =>
+    AsyncStorage.setItem('activeSession', JSON.stringify({ schemaVersion: 1, data }));
+
+  it('ignores an active session with an unparseable start time', async () => {
+    await storeActive({ startedAt: 'garbage', plannedMin: 25, intention: 'work' });
+    expect(await loadActiveSession()).toBeNull();
+  });
+
+  it.each([0, -5, 7, 125])('ignores an active session planned for %i minutes', async plannedMin => {
+    await storeActive({ startedAt: validSession.startedAt, plannedMin, intention: 'work' });
+    expect(await loadActiveSession()).toBeNull();
+  });
+
+  it('keeps a 1-minute (debug) active session', async () => {
+    const a = { startedAt: validSession.startedAt, plannedMin: 1, intention: 'work' as const };
+    await storeActive(a);
+    expect(await loadActiveSession()).toEqual(a);
+  });
+
+  it('drops sessions with invalid dates or durations', async () => {
+    await AsyncStorage.setItem(
+      'sessions',
+      JSON.stringify({
+        schemaVersion: 1,
+        data: [
+          validSession,
+          { ...validSession, id: 'b', endedAt: 'garbage' },
+          { ...validSession, id: 'c', startedAt: 'garbage' },
+          { ...validSession, id: 'd', plannedMin: 0 },
+        ],
+      }),
+    );
+    expect(await loadSessions()).toEqual([validSession]);
+  });
+
+  it.each([0, 7, 500])('falls back to the default duration for %i', async defaultDurationMin => {
+    await AsyncStorage.setItem(
+      'settings',
+      JSON.stringify({ schemaVersion: 1, data: { defaultDurationMin, sound: false, keepAwake: true } }),
+    );
+    expect(await loadSettings()).toEqual({ ...DEFAULT_SETTINGS, sound: false });
+  });
+});
+
+describe('resetStorage', () => {
+  it('reports success and removes every key', async () => {
+    await saveUser(user);
+    expect(await resetStorage()).toBe(true);
+    expect(await AsyncStorage.getItem('user')).toBeNull();
+  });
+
+  it('reports failure instead of throwing when storage cannot be cleared', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(AsyncStorage, 'removeMany').mockRejectedValueOnce(new Error('disk full'));
+    expect(await resetStorage()).toBe(false);
   });
 });

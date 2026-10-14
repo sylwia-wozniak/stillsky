@@ -7,6 +7,7 @@ import {
   type Settings,
   type User,
 } from '../domain/types';
+import { isValidDuration } from '../domain/validation';
 
 const SCHEMA_VERSION = 1;
 
@@ -22,6 +23,11 @@ type Key = (typeof KEYS)[keyof typeof KEYS];
 const isObject = (d: unknown): d is Record<string, unknown> =>
   typeof d === 'object' && d !== null;
 const isString = (v: unknown): v is string => typeof v === 'string';
+const isDateString = (v: unknown): v is string =>
+  isString(v) && Number.isFinite(Date.parse(v));
+// Accept debug durations too, so a 1-minute session survives a relaunch in debug builds.
+const isPlannedMin = (v: unknown): v is number =>
+  typeof v === 'number' && isValidDuration(v, true);
 const isIntention = (v: unknown) => INTENTIONS.some(t => t.id === v);
 
 const isUser = (d: unknown): d is User =>
@@ -29,8 +35,8 @@ const isUser = (d: unknown): d is User =>
 
 const isActiveSession = (d: unknown): d is ActiveSession =>
   isObject(d) &&
-  isString(d.startedAt) &&
-  typeof d.plannedMin === 'number' &&
+  isDateString(d.startedAt) &&
+  isPlannedMin(d.plannedMin) &&
   isIntention(d.intention);
 
 /** Sessions saved before the Tag → Intention rename stored the field as `tag`. */
@@ -46,7 +52,7 @@ const isSession = (d: unknown): d is Session =>
   isActiveSession(d) &&
   isObject(d) &&
   isString(d.id) &&
-  isString(d.endedAt) &&
+  isDateString(d.endedAt) &&
   (d.status === 'completed' || d.status === 'failed');
 
 /** Reads a versioned value. Never throws: bad data is logged and treated as missing. */
@@ -87,7 +93,8 @@ export async function loadSettings(): Promise<Settings> {
   if (!isObject(d)) return { ...DEFAULT_SETTINGS };
   return {
     defaultDurationMin:
-      typeof d.defaultDurationMin === 'number'
+      typeof d.defaultDurationMin === 'number' &&
+      isValidDuration(d.defaultDurationMin, false)
         ? d.defaultDurationMin
         : DEFAULT_SETTINGS.defaultDurationMin,
     sound: typeof d.sound === 'boolean' ? d.sound : DEFAULT_SETTINGS.sound,
@@ -131,4 +138,15 @@ export function saveActiveSession(a: ActiveSession | null): Promise<void> {
 
 export function clearAll(): Promise<void> {
   return AsyncStorage.removeMany(Object.values(KEYS));
+}
+
+/** Clears all keys; resolves false (never rejects) when storage could not be cleared. */
+export async function resetStorage(): Promise<boolean> {
+  try {
+    await clearAll();
+    return true;
+  } catch (e) {
+    console.warn('[storage] reset failed', e);
+    return false;
+  }
 }

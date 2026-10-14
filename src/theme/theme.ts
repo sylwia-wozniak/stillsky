@@ -53,6 +53,13 @@ export const typography = {
   },
 };
 
+/** Glass tab bar; the Focus tab re-applies it (plus display: none) while a session runs. */
+export const tabBarStyle = {
+  backgroundColor: 'rgba(23,18,58,0.45)',
+  borderTopColor: colors.glassBorder,
+  elevation: 0,
+};
+
 /** Translucent card surface used across screens. */
 export const glassCard = {
   backgroundColor: colors.glass,

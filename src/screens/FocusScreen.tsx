@@ -25,6 +25,7 @@ import {
   glassCard,
   radius,
   spacing,
+  tabBarStyle,
   typography,
 } from '../theme/theme';
 
@@ -52,7 +53,8 @@ export function FocusScreen() {
   // Hide the tab bar while focusing.
   useEffect(() => {
     navigation.setOptions({
-      tabBarStyle: running ? { display: 'none' } : undefined,
+      // Options merge shallowly, so always pass the full glass style.
+      tabBarStyle: running ? { ...tabBarStyle, display: 'none' } : tabBarStyle,
     });
   }, [navigation, running]);
 
@@ -76,15 +78,23 @@ export function FocusScreen() {
     if (!running) return;
     tick();
     const id = setInterval(tick, 1000);
-    const sub = AppState.addEventListener(
-      'change',
-      s => s === 'active' && tick(),
-    );
-    return () => {
-      clearInterval(id);
-      sub.remove();
-    };
+    return () => clearInterval(id);
   }, [running, tick]);
+
+  // Coming back to the app refreshes the clock (greeting, countdown) even while idle.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', s => {
+      if (s !== 'active') return;
+      if (running) tick();
+      else setNow(new Date());
+    });
+    return () => sub.remove();
+  }, [running, tick]);
+
+  // A Give-up dialog left open when the session ends must not come back next session.
+  useEffect(() => {
+    if (!running) setConfirmGiveUp(false);
+  }, [running]);
 
   const onConfirmGiveUp = async () => {
     setConfirmGiveUp(false);
@@ -96,6 +106,18 @@ export function FocusScreen() {
   const hour = now.getHours();
   const name = user?.name ?? '';
 
+  const giveUpDialog = (
+    // Kept mounted outside the state branches: unmounting a visible Modal on iOS leaves
+    // XCUITest unable to read the view hierarchy.
+    <ConfirmDialog
+      visible={confirmGiveUp && running}
+      message="Your star will fall. Give up?"
+      confirmLabel="Give up"
+      onConfirm={onConfirmGiveUp}
+      onCancel={() => setConfirmGiveUp(false)}
+    />
+  );
+
   if (justCompleted) {
     return (
       <SafeAreaView style={styles.safe}>
@@ -104,7 +126,7 @@ export function FocusScreen() {
           <Text
             style={typography.title}
             testID={TID.focus.completedMessage}
-            accessibilityLabel="You earned a star"
+            accessibilityLabel="You earned a star ✨"
           >
             You earned a star ✨
           </Text>
@@ -132,6 +154,7 @@ export function FocusScreen() {
             </Pressable>
           </View>
         </View>
+        {giveUpDialog}
       </SafeAreaView>
     );
   }
@@ -160,13 +183,7 @@ export function FocusScreen() {
             <Text style={styles.secondaryText}>Give up</Text>
           </Pressable>
         </View>
-        <ConfirmDialog
-          visible={confirmGiveUp}
-          message="Your star will fall. Give up?"
-          confirmLabel="Give up"
-          onConfirm={onConfirmGiveUp}
-          onCancel={() => setConfirmGiveUp(false)}
-        />
+        {giveUpDialog}
       </SafeAreaView>
     );
   }
@@ -197,11 +214,15 @@ export function FocusScreen() {
           accessibilityLabel="Start"
           accessibilityRole="button"
           style={[styles.button, styles.start]}
-          onPress={() => startSession(duration, intention)}
+          onPress={() => {
+            setNow(new Date()); // first running frame shows the full duration
+            startSession(duration, intention);
+          }}
         >
           <Text style={styles.buttonText}>Start</Text>
         </Pressable>
       </View>
+      {giveUpDialog}
     </SafeAreaView>
   );
 }

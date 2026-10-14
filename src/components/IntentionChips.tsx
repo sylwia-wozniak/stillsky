@@ -24,7 +24,7 @@ export function IntentionChips({
           selected={t.id === value}
           onPress={() => onChange(t.id)}
           testID={TID.focus.intention(t.id)}
-          accessibilityLabel={`Intention ${t.label}`}
+          accessibilityLabel={t.label}
         />
       ))}
     </ScrollView>
