@@ -1,77 +1,124 @@
-# Stillsky
+<div align="center">
 
-A calm night-sky focus timer. Every completed focus session lights a star; stars fill
-constellations; giving up makes the star fall. Built with React Native CLI (TypeScript) for iOS and
-Android, with stable test IDs everywhere so it is a good target for **Appium** and **Mobilewright**.
+# ✦ Stillsky
 
-All data stays on the device (AsyncStorage). No login, no backend.
+**A calm focus timer where every finished session lights a star.**
 
-## Prerequisites
+Fill constellations by staying focused. Give up early, and your star falls.
 
-- Node 20+ and npm
-- **iOS:** Xcode, CocoaPods (`bundle install` once, then pods as below)
-- **Android:** Android Studio with SDK + an emulator (AVD), JDK 17, and in `~/.zshrc`:
-  ```bash
-  export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
-  export ANDROID_HOME=$HOME/Library/Android/sdk
-  export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools
-  ```
+![React Native](https://img.shields.io/badge/React_Native-0.87-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![Platforms](https://img.shields.io/badge/platforms-iOS_|_Android-8E7BFF)
+![Unit tests](https://img.shields.io/badge/unit_tests-Vitest-6E9F18?logo=vitest&logoColor=white)
+![E2E](https://img.shields.io/badge/E2E-Maestro_|_Appium_ready-F2A7C3)
 
-## Run (development)
+<img src="docs/screenshots/ios-onboarding.png" width="190" alt="Onboarding" />
+<img src="docs/screenshots/ios-focus.png" width="190" alt="Focus timer" />
+<img src="docs/screenshots/ios-running.png" width="190" alt="Session running" />
+<img src="docs/screenshots/ios-sky.png" width="190" alt="Sky with constellations" />
+
+<img src="docs/screenshots/ios-stats.png" width="190" alt="Stats" />
+<img src="docs/screenshots/ios-settings.png" width="190" alt="Settings" />
+<img src="docs/screenshots/android-focus.png" width="190" alt="Focus timer on Android" />
+<img src="docs/screenshots/android-sky.png" width="190" alt="Sky on Android" />
+
+<sub>iPhone 17 Pro (iOS 26) and Pixel 9 (Android 17)</sub>
+
+</div>
+
+---
+
+## Features
+
+- **Focus sessions:** pick 10–120 minutes and an intention (Work, Study, Reading, Other). The star
+  brightens as time passes.
+- **A sky that grows:** each completed session lights the next star in 8 constellations, from the
+  Little Dipper to Scorpius. Tap a constellation to see your progress.
+- **Honest stats:** focus time, stars earned and fallen, success rate, minutes per hour, weekday
+  or day, and a breakdown by intention.
+- **Calm by design:** a dusk gradient with soft haze, frosted glass surfaces and the Outfit font.
+- **Private:** no account, no backend. Everything stays on the device.
+- **Survives being killed:** a session that ends while the app is closed still counts.
+
+## Built for test automation
+
+Stillsky is a practice target for mobile E2E testing with **Appium**, **Mobilewright** and
+**Maestro**, so it is designed to be easy to automate:
+
+- Every interactive or asserted element has a stable `testID` **and** an accessibility label that
+  equals its visible text. All IDs live in [`src/testIds.ts`](src/testIds.ts) and follow
+  `screen.element`: `onboarding.nameInput`, `focus.duration.25`, `focus.intention.study`,
+  `sky.constellation.orion`, `stats.bar.3`, `settings.resetButton`, `tabs.sky`…
+- SVG drawings (constellations, chart bars) carry transparent overlay views with test IDs,
+  because SVG shapes are not exposed to automation.
+- Debug builds add a **1-minute duration** and a **Seed demo data** button, so tests don't wait
+  25 minutes or start from an empty sky.
+- [8 Maestro flows](e2e/maestro/) already cover every screen and run on both platforms.
+
+| Interesting scenarios to automate | |
+|---|---|
+| Onboarding validation (empty, whitespace-only, 21-character, emoji names) | forms |
+| Start → Give up → Cancel / Confirm, with a confirmation dialog | dialogs |
+| Complete a 1-minute session → star appears in Sky, numbers change in Stats | waits, cross-screen state |
+| Kill the app mid-session, relaunch after the end → counted as completed | app lifecycle |
+| Horizontal duration picker where the value you need is off-screen | swipes, scrolling |
+| Toggles and default duration persist across relaunch | persistence |
+| Reset requires typing `RESET` exactly | disabled states |
+
+## Getting started
+
+**Prerequisites:** Node 20+, Xcode + CocoaPods for iOS, Android Studio with an emulator and JDK 17+
+for Android. In `~/.zshrc`:
+
+```bash
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools
+```
 
 ```bash
 npm install
-cd ios && bundle exec pod install && cd ..
+cd ios && bundle install && bundle exec pod install && cd ..
 npm start            # Metro bundler, keep it running
 npm run ios          # iOS simulator
 npm run android      # Android emulator
 ```
 
-## Unit tests
+## Tests
 
 ```bash
-npm test             # Vitest, runs with TZ=UTC
+npm test                    # unit tests (Vitest): timer, constellations, stats, storage, validation
+npm run e2e:maestro         # all Maestro flows (~8 min, includes real 1-minute sessions)
+npm run e2e:maestro:smoke   # fast subset (~2 min)
 ```
 
-Unit tests cover the pure logic in `src/domain` and `src/storage`.
+Maestro runs against a debug build with Metro running. With both a simulator and an emulator
+open, pick one: `maestro --device emulator-5554 test e2e/maestro`.
 
-## App identifiers
+## Build artifacts for Appium
 
-| Platform | Identifier |
-|----------|------------|
-| iOS bundle ID | `com.stillsky` |
-| Android package | `com.stillsky` |
-| Android main activity | `com.stillsky.MainActivity` |
-
-## Build artifacts for automation
-
-Debug builds load JavaScript from Metro (`npm start` must be running) and include the debug
-helpers below. Release builds bundle the JavaScript and run standalone.
+Debug builds load JavaScript from Metro and include the debug helpers. Release builds bundle the
+JavaScript and run on their own.
 
 **iOS simulator `.app`**
 
 ```bash
-# Release (standalone, no Metro needed)
 xcodebuild -workspace ios/Stillsky.xcworkspace -scheme Stillsky -configuration Release \
   -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build build
 # → ios/build/Build/Products/Release-iphonesimulator/Stillsky.app
-
-# Debug (needs Metro; has debug helpers)
-xcodebuild -workspace ios/Stillsky.xcworkspace -scheme Stillsky -configuration Debug \
-  -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build build
-# → ios/build/Build/Products/Debug-iphonesimulator/Stillsky.app
+# (use -configuration Debug for the debug helpers)
 ```
 
 **Android `.apk`**
 
 ```bash
 cd android
-./gradlew assembleDebug     # → android/app/build/outputs/apk/debug/app-debug.apk (needs Metro)
-./gradlew assembleRelease   # → android/app/build/outputs/apk/release/app-release.apk (standalone,
-                            #   signed with the template's debug keystore — fine for testing)
+./gradlew assembleRelease   # → app/build/outputs/apk/release/app-release.apk (standalone)
+./gradlew assembleDebug     # → app/build/outputs/apk/debug/app-debug.apk (needs Metro)
 ```
 
-## Appium capabilities
+The release APK is signed with the template's debug keystore, which is fine for testing.
+
+**Capabilities**
 
 ```jsonc
 // iOS
@@ -79,7 +126,7 @@ cd android
   "platformName": "iOS",
   "appium:automationName": "XCUITest",
   "appium:deviceName": "iPhone 17 Pro",
-  "appium:app": "/absolute/path/to/ios/build/Build/Products/Release-iphonesimulator/Stillsky.app",
+  "appium:app": "/absolute/path/to/Stillsky.app",
   "appium:bundleId": "com.stillsky"
 }
 
@@ -87,46 +134,33 @@ cd android
 {
   "platformName": "Android",
   "appium:automationName": "UiAutomator2",
-  "appium:avd": "<your AVD name>",
-  "appium:app": "/absolute/path/to/android/app/build/outputs/apk/release/app-release.apk",
+  "appium:avd": "Pixel_9",
+  "appium:app": "/absolute/path/to/app-release.apk",
   "appium:appPackage": "com.stillsky",
-  "appium:appActivity": ".MainActivity"
+  "appium:appActivity": ".MainActivity",
+  "appium:autoGrantPermissions": true
 }
 ```
 
-## Locators
+- iOS: a testID is the accessibility identifier → `accessibility id` or `id` locators.
+- Android: a testID is the view's `resource-id` → `id` locators (UiAutomator2).
+- Android debug builds on Android 17 ask for local-network access (React Native uses it to reach
+  Metro). `autoGrantPermissions` (Appium) or `permissions: { all: allow }` (Maestro) handles it.
+  Release builds don't ask.
 
-Every interactive or asserted element has a `testID` **and** an `accessibilityLabel`. All IDs live
-in [`src/testIds.ts`](src/testIds.ts) and follow `screen.element`, for example:
+## Project structure
 
-`onboarding.nameInput`, `focus.startButton`, `focus.duration.25`, `focus.intention.study`,
-`focus.timerText`, `dialog.confirmButton`, `sky.constellation.orion`, `stats.period.week`,
-`stats.totalTime`, `stats.bar.3`, `settings.soundToggle`, `settings.resetButton`, `tabs.sky`.
-
-- iOS: the testID is the accessibility identifier → Appium `accessibility id` or `id`.
-- Android: the testID is the view's `resource-id` → Appium `id` (UiAutomator2).
-- The accessibility label always equals the visible text, so text assertions work too.
-- Constellations and chart bars are drawn with SVG; each has a transparent overlay view that
-  carries its testID, because SVG shapes are not exposed to automation.
-
-## Debug helpers (debug builds only)
-
-- **1-minute duration** in the Focus duration picker, so tests don't wait 10+ minutes.
-- **Seed demo data** in Settings: replaces your sessions with ~30 days of random history.
-
-## Maestro smoke flows
-
-[`e2e/maestro/`](e2e/maestro/) contains 8 Maestro flows covering every screen (debug build + Metro):
-
-```bash
-npm run e2e:maestro         # all flows (~6 min, includes real 1-minute sessions)
-npm run e2e:maestro:smoke   # fast subset (~2 min)
+```
+src/
+  domain/       pure TypeScript rules: timer, constellations, stats, validation (unit-tested)
+  storage/      versioned AsyncStorage with validation and migrations
+  state/        AppProvider: app state and actions
+  screens/      Onboarding, Focus, Sky, Stats, Settings
+  components/   Star, SkyCanvas, BarChart, pickers, dialogs, gradient background
+  testIds.ts    every test ID in one place
+e2e/maestro/    end-to-end flows
+docs/           design spec, implementation plan, screenshots
 ```
 
-## Good scenarios to automate
-
-- Onboarding validation (empty / whitespace / 21-character names)
-- Start → give up → cancel / confirm (falling star)
-- Complete a 1-minute session → star in Sky, numbers in Stats
-- Kill the app mid-session, relaunch after the end → session counted as completed
-- Settings persist across relaunch; Reset requires typing `RESET` exactly
+Built with React Native CLI, TypeScript, React Navigation, react-native-svg, Reanimated and
+AsyncStorage. Font: [Outfit](https://github.com/Outfitio/Outfit-Fonts) (SIL Open Font License).
