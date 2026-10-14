@@ -166,3 +166,4 @@ docs/           design spec, implementation plan, screenshots
 
 Built with React Native CLI, TypeScript, React Navigation, react-native-svg, Reanimated and
 AsyncStorage. Font: [Outfit](https://github.com/Outfitio/Outfit-Fonts) (SIL Open Font License).
+Tab icons: shapes from [Feather](https://feathericons.com) (MIT).
