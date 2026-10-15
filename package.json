@@ -9,7 +9,10 @@
     "start": "react-native start",
     "test": "TZ=UTC vitest run",
     "e2e:maestro": "maestro test e2e/maestro",
-    "e2e:maestro:smoke": "maestro test e2e/maestro --include-tags smoke"
+    "e2e:maestro:smoke": "maestro test e2e/maestro --include-tags smoke",
+    "e2e:mobilewright": "npm --prefix e2e/mobilewright test",
+    "e2e:mobilewright:ios": "npm --prefix e2e/mobilewright run test:ios",
+    "e2e:mobilewright:android": "npm --prefix e2e/mobilewright run test:android"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^3.1.1",

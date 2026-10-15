@@ -1,0 +1,20 @@
+{
+  "name": "stillsky-e2e-mobilewright",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "mobilewright test",
+    "test:ios": "mobilewright test --project ios",
+    "test:android": "mobilewright test --project android"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@mobilewright/test": "^0.0.66",
+    "@types/node": "^26.6.5",
+    "mobilewright": "^0.0.66",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
