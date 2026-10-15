@@ -10,17 +10,24 @@ written with **Appium 3** and **WebdriverIO 10** (Mocha, TypeScript). Locators c
 cd e2e/appium
 npm install
 npx appium driver install uiautomator2
-npx appium driver install xcuitest@12.13.2   # see "Xcode version" below
+npx appium driver install xcuitest   # see "Xcode version" below
 ```
 
 Appium and its drivers live in this folder (`npx appium`), not globally.
 
 ### Xcode version
 
-The latest XCUITest driver (12.18.x) ships a WebDriverAgent that needs a newer Xcode than 26.0.1
-(it links `lib_TestingInterop.dylib`, which 26.0.1 doesn't have), and the session fails with
-`xcodebuild failed with code 65`. Driver **12.13.2** pins WebDriverAgent 16.12.10, the last version
-that builds with Xcode 26.0.1. After updating Xcode you can move to the latest driver.
+The suite runs on Xcode 27.0 with the iOS 27.0 simulator runtime and XCUITest driver 12.18.1.
+Create the simulator once if you don't have it:
+
+```bash
+xcrun simctl create "iPhone 18 Pro" com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro \
+  com.apple.CoreSimulator.SimRuntime.iOS-27-0
+```
+
+On Xcode 26.0.1, driver 12.18.x fails with `xcodebuild failed with code 65`: its WebDriverAgent
+links `lib_TestingInterop.dylib`, which 26.0.1 doesn't have. Pin driver **12.13.2** (WebDriverAgent
+16.12.10) there instead.
 
 ## Run
 
@@ -28,7 +35,7 @@ Start Metro and a debug build first (`npm start`, then `npm run ios` / `npm run 
 repo root). The tests use the debug-only 1-minute duration and Seed demo data.
 
 ```bash
-npm run test:ios         # iPhone 17 Pro simulator
+npm run test:ios         # iPhone 18 Pro simulator (iOS 27)
 npm run test:android     # emulator-5554 (Pixel 9)
 npx wdio run ./wdio.ios.conf.ts --spec ./test/specs/05-settings.ts   # one spec
 ```

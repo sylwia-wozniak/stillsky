@@ -12,7 +12,7 @@ export default defineConfig({
   reporter: 'list',
   viewTree: 'on-failure', // attach the accessibility tree to failed tests
   projects: [
-    { name: 'ios', use: { platform: 'ios', deviceName: /^iPhone 17 Pro$/ } },
+    { name: 'ios', use: { platform: 'ios', deviceName: /^iPhone 18 Pro$/ } },
     { name: 'android', use: { platform: 'android', deviceName: /^Pixel 9$/ } },
   ],
 });

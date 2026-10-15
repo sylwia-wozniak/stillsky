@@ -131,7 +131,7 @@ The release APK is signed with the template's debug keystore, which is fine for 
 {
   "platformName": "iOS",
   "appium:automationName": "XCUITest",
-  "appium:deviceName": "iPhone 17 Pro",
+  "appium:deviceName": "iPhone 18 Pro",
   "appium:app": "/absolute/path/to/Stillsky.app",
   "appium:bundleId": "com.stillsky"
 }

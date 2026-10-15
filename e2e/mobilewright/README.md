@@ -23,7 +23,7 @@ Start Metro and a debug build first (`npm start`, then `npm run ios` / `npm run 
 repo root). The tests use the debug-only 1-minute duration and Seed demo data.
 
 ```bash
-npm run test:ios         # iPhone 17 Pro simulator
+npm run test:ios         # iPhone 18 Pro simulator (iOS 27)
 npm run test:android     # Pixel 9 emulator
 npm test                 # both, one after the other
 npx mobilewright test tests/05-settings.test.ts --project ios   # one file

@@ -6,8 +6,8 @@ export const config: WebdriverIO.Config = {
     {
       platformName: 'iOS',
       'appium:automationName': 'XCUITest',
-      'appium:deviceName': 'iPhone 17 Pro',
-      'appium:platformVersion': '26.0',
+      'appium:deviceName': 'iPhone 18 Pro',
+      'appium:platformVersion': '27.0',
       'appium:bundleId': 'com.stillsky',
       'appium:noReset': true, // tests reset app data themselves (see test/helpers.ts)
       'appium:newCommandTimeout': 240,
