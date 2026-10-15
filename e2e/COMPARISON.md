@@ -61,6 +61,66 @@ The iOS cost is fixed per read and doesn't depend on screen size. Turning simula
 off made no difference. A typical test does 15–25 actions, so iOS pays roughly 30–50 s of overhead
 per test.
 
+## Why Maestro is slower on Android
+
+Before every tap, Maestro waits for the **whole screen** to stop changing. Mobilewright only
+checks that the **element it's about to tap** has stopped moving. Stillsky's Focus screen has a
+countdown that changes every second, and that's what exposes the difference.
+
+From the Maestro log of flow 02 on Android:
+
+```
+09:12:16.86  Tapping on element: Give up
+             (nothing for 10.4 s: waiting for the screen to settle)
+09:12:27.24  Refreshed element
+09:12:27.24  Tapping at (540, 1769)
+09:12:28.79  Something have changed in the UI judging by view hierarchy. Proceed.
+```
+
+| Maestro tap, Android | Time | What's on screen |
+|---|---:|---|
+| Give up | 14.1 s | countdown ticking |
+| Start | 12.0 s | countdown starts after the tap |
+| Name field | 8.4 s | keyboard sliding in, blinking cursor |
+| Cancel in the dialog | 8.2 s | countdown ticking behind it |
+| Duration chip | 2.7 s | nothing moving |
+
+The same Give-up tap takes 2.6 s with Maestro on iOS and an estimated 0.9 s with Mobilewright on Android (two 0.2 s reads plus the tap).
+
+### Why it happens (from Maestro's source)
+
+Both platforms call `waitForAppToSettle` before a tap, but they decide "settled" differently:
+
+- **Android** ([`ScreenshotUtils.waitForAppToSettle`](https://github.com/mobile-dev-inc/maestro/blob/main/maestro-client/src/main/java/maestro/utils/ScreenshotUtils.kt)):
+  - It reads the full screen tree (every element and all its text) up to 10 times, 200 ms apart,
+    and stops as soon as two reads in a row are identical.
+  - The countdown text changes every second, so two reads never match. All 10 attempts run (about
+    10 seconds), then it taps anyway.
+- **iOS** ([`IsScreenStaticHandler`](https://github.com/mobile-dev-inc/maestro/blob/main/maestro-ios-xctest-runner/maestro-driver-iosUITests/Routes/Handlers/ScreenDiffHandler.swift)):
+  - It takes two screenshots right after each other, a few milliseconds apart, and compares their
+    hashes.
+  - A countdown that changes once a second is almost never caught between two screenshots that
+    close together, so the screen counts as "static" within about 0.3 s.
+- **Mobilewright, both platforms:** it checks only the target element's position across two reads.
+  The countdown elsewhere doesn't matter.
+
+This is about Maestro's design, not a bug in the app. Any screen with something constantly
+changing (a timer, a progress animation, a video, a spinner) will slow Maestro's taps on Android.
+The code links point to Maestro's current source; our runs used 2.0.10, and its logs show the
+same ~10 s wait.
+
+### The fix: `waitToSettleTimeoutMs`
+
+`tapOn` accepts a limit on that wait:
+
+```yaml
+- tapOn: { id: focus.giveUpButton, waitToSettleTimeoutMs: 500 }
+```
+
+With a 500 ms limit on the four taps over the countdown screen, flow 02 on Android went from
+**76.8 s to 40.7 s** (Give up: 14.1 s → 2.7 s). The suite in `e2e/maestro/` still uses Maestro's
+defaults, so the benchmark compares the tools out of the box.
+
 ## Challenges we hit
 
 ### Maestro
@@ -73,6 +133,8 @@ per test.
   `optional: true`).
 - **`clearState` also revokes permissions.** Android debug builds then show a local-network prompt,
   so every launch needs `permissions: { all: allow }`.
+- **Slow taps on screens that keep changing (Android).** Each tap waits up to ~10 s for the
+  screen to settle; `waitToSettleTimeoutMs` fixes it (see above).
 - **`hideKeyboard` hid a real bug.** The flow closed the keyboard first, so it never noticed that a
   duration chip couldn't be tapped while the keyboard was open.
 
