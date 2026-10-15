@@ -12,7 +12,9 @@
     "e2e:maestro:smoke": "maestro test e2e/maestro --include-tags smoke",
     "e2e:mobilewright": "npm --prefix e2e/mobilewright test",
     "e2e:mobilewright:ios": "npm --prefix e2e/mobilewright run test:ios",
-    "e2e:mobilewright:android": "npm --prefix e2e/mobilewright run test:android"
+    "e2e:mobilewright:android": "npm --prefix e2e/mobilewright run test:android",
+    "e2e:appium:ios": "npm --prefix e2e/appium run test:ios",
+    "e2e:appium:android": "npm --prefix e2e/appium run test:android"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^3.1.1",
