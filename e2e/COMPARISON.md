@@ -11,7 +11,7 @@ and a Pixel 9 emulator (Android 17). Timings and run conditions are in [BENCHMAR
 | **Setup** | One CLI install | `npm install` per project; one-time helper agent on each iOS simulator |
 | **Locators** | `id:` strings copied into YAML | Imports `src/testIds.ts`, so IDs can't drift from the app |
 | **Suite time, iOS** | **7m 31s** | 8.7m |
-| **Suite time, Android** | 10m 42s | **7.6m** |
+| **Suite time, Android** | 10m 42s (9m 14s tuned) | **7.6m** |
 | **Time per action, iOS** | ~1 s (estimated from flow times) | ~2 s per tap, ~4.7 s per text fill (measured) |
 | **Waiting** | Automatic between steps | Automatic in actions and `expect()` |
 | **Clean state per test** | `launchApp: clearState: true` | `device.clearAppData()` in a helper |
@@ -118,8 +118,18 @@ same ~10 s wait.
 ```
 
 With a 500 ms limit on the four taps over the countdown screen, flow 02 on Android went from
-**76.8 s to 40.7 s** (Give up: 14.1 s → 2.7 s). The suite in `e2e/maestro/` still uses Maestro's
-defaults, so the benchmark compares the tools out of the box.
+**76.8 s to 40.7 s** (Give up: 14.1 s → 2.7 s). All flows in `e2e/maestro/` now use this
+setting on every tap. Whole suite, all 8 flows passing:
+
+| Maestro | iOS | Android |
+|---|---:|---:|
+| Default settings | 7m 31s | 10m 42s |
+| Tuned (`waitToSettleTimeoutMs: 500`) | 7m 32s | **9m 14s** |
+| Mobilewright, for reference | 8.7m | 7.6m |
+
+Tuning saves 1m 28s on Android and nothing on iOS, where the settle check was already fast. Maestro
+is still slower than Mobilewright on Android. The remaining gap is its normal per-step cost on
+Android: 2.7–2.8 s measured for a tap on a still screen, compared with an estimated 0.9 s for Mobilewright.
 
 ## Challenges we hit
 

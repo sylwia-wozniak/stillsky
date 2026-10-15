@@ -12,10 +12,17 @@ can be compared on the same scenarios.
 |------|---------|----------|--------|------:|-------:|-----------:|-----------:|------|--------|
 | Maestro | 2.0.10 | iOS 26.0 | iPhone 17 Pro (simulator) | 8 | 8 | 7m 31s | 56s | 2026-10-14 | `5f5e4d3` |
 | Maestro | 2.0.10 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 10m 42s | 1m 20s | 2026-10-14 | `5f5e4d3` |
+| Maestro, tuned¹ | 2.0.10 | iOS 26.0 | iPhone 17 Pro (simulator) | 8 | 8 | 7m 32s | 57s | 2026-10-15 | `05d3d15` |
+| Maestro, tuned¹ | 2.0.10 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 9m 14s | 1m 9s | 2026-10-15 | `05d3d15` |
 | Appium | — | iOS | — | — | — | — | — | — | — |
 | Appium | — | Android | — | — | — | — | — | — | — |
 | Mobilewright | 0.0.66 | iOS 26.0 | iPhone 17 Pro (simulator) | 8 | 8 | 8.7m | 1m 5s | 2026-10-15 | `cd46444` |
 | Mobilewright | 0.0.66 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 7.6m | 57s | 2026-10-15 | `b2b3022` |
+
+¹ Every `tapOn` sets `waitToSettleTimeoutMs: 500`, so a tap waits at most 0.5 s for the screen to
+stop changing. This is what the flows in `e2e/maestro/` use now. The plain "Maestro" rows were
+measured with Maestro's defaults (commit `5f5e4d3`); remove the option to reproduce them. See
+[COMPARISON.md](COMPARISON.md#why-maestro-is-slower-on-android) for why it matters on Android.
 
 ## Per scenario
 
@@ -37,9 +44,26 @@ tool overhead.
 
 Mobilewright reports times over a minute in tenths of a minute (1.6m ≈ 1m 36s).
 
+### Maestro: default vs tuned
+
+| # | Scenario | Default iOS | Tuned iOS | Default Android | Tuned Android |
+|---|----------|------------:|----------:|----------------:|--------------:|
+| 01 | Onboarding | 21s | 20s | 29s | 28s |
+| 02 | Give up with confirmation | 25s | 27s | 1m 18s | **41s** |
+| 03 | 1-minute session lights a star | 1m 21s | 1m 22s | 1m 36s | 1m 33s |
+| 04 | Stats | 1m 33s | 1m 33s | 2m 16s | **1m 53s** |
+| 05 | Settings and Reset | 46s | 45s | 1m 6s | 59s |
+| 06 | Demo data | 19s | 19s | 33s | 30s |
+| 07 | Session ends while app is killed | 1m 30s | 1m 29s | 1m 43s | 1m 41s |
+| 08 | Stale Give-up dialog | 1m 16s | 1m 17s | 1m 41s | 1m 29s |
+| | **Total** | **7m 31s** | **7m 32s** | **10m 42s** | **9m 14s** |
+
+The tuning only matters where taps happen on a screen that keeps changing (the countdown in 02,
+04 and 08). iOS is unchanged because its settle check was already fast.
+
 ## Notes: Maestro vs Mobilewright
 
-- **Speed:** Mobilewright was faster on Android (7.6m vs 10m 42s) and slower on iOS
+- **Speed:** Mobilewright was faster on Android (7.6m vs 10m 42s default, 9m 14s tuned) and slower on iOS
   (8.7m vs 7m 31s). Excluding the ~4m 10s of fixed waiting, the tool overhead is roughly
   Maestro 3m 21s / Mobilewright 4m 30s on iOS, and Maestro 6m 32s / Mobilewright 3m 26s on Android.
   On iOS every Mobilewright action reads the screen at least twice (~0.77 s per read), so a tap
