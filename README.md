@@ -93,7 +93,8 @@ npm run e2e:maestro:smoke   # fast subset (~2 min)
 npm run e2e:mobilewright    # Mobilewright suite, iOS then Android (run `npm install` in e2e/mobilewright first)
 ```
 
-Suite timings per tool and platform are tracked in [e2e/BENCHMARKS.md](e2e/BENCHMARKS.md).
+Suite timings per tool and platform are tracked in [e2e/BENCHMARKS.md](e2e/BENCHMARKS.md), and a
+plain-language Maestro vs Mobilewright comparison is in [e2e/COMPARISON.md](e2e/COMPARISON.md).
 
 Maestro runs against a debug build with Metro running. With both a simulator and an emulator
 open, pick one: `maestro --device emulator-5554 test e2e/maestro`.

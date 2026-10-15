@@ -14,7 +14,7 @@ can be compared on the same scenarios.
 | Maestro | 2.0.10 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 10m 42s | 1m 20s | 2026-10-14 | `5f5e4d3` |
 | Appium | — | iOS | — | — | — | — | — | — | — |
 | Appium | — | Android | — | — | — | — | — | — | — |
-| Mobilewright | 0.0.66 | iOS 26.0 | iPhone 17 Pro (simulator) | 8 | 8 | 9.5m | 1m 11s | 2026-10-15 | `b2b3022` |
+| Mobilewright | 0.0.66 | iOS 26.0 | iPhone 17 Pro (simulator) | 8 | 8 | 8.7m | 1m 5s | 2026-10-15 | `cd46444` |
 | Mobilewright | 0.0.66 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 7.6m | 57s | 2026-10-15 | `b2b3022` |
 
 ## Per scenario
@@ -25,23 +25,25 @@ tool overhead.
 
 | # | Scenario | Fixed wait | Maestro iOS | Maestro Android | Appium iOS | Appium Android | Mobilewright iOS | Mobilewright Android |
 |---|----------|-----------:|------------:|----------------:|-----------:|---------------:|-----------------:|---------------------:|
-| 01 | Onboarding validates the name and is skipped on relaunch | — | 21s | 29s | — | — | 28.7s | 20.6s |
-| 02 | Giving up asks for confirmation and makes the star fall | — | 25s | 1m 18s | — | — | 37.6s | 29.6s |
-| 03 | Completing a 1-minute session lights the first star | ~60s | 1m 21s | 1m 36s | — | — | 1.6m | 1.4m |
-| 04 | Stats count completed and fallen stars per period | ~60s | 1m 33s | 2m 16s | — | — | 2.0m | 1.6m |
-| 05 | Settings persist across relaunch and Reset needs exact confirmation | — | 46s | 1m 6s | — | — | 1.1m | 39.1s |
-| 06 | Seeded demo data fills Sky and Stats | — | 19s | 33s | — | — | 32.7s | 19.4s |
+| 01 | Onboarding validates the name and is skipped on relaunch | — | 21s | 29s | — | — | 23.8s | 20.6s |
+| 02 | Giving up asks for confirmation and makes the star fall | — | 25s | 1m 18s | — | — | 31.7s | 29.6s |
+| 03 | Completing a 1-minute session lights the first star | ~60s | 1m 21s | 1m 36s | — | — | 1.5m | 1.4m |
+| 04 | Stats count completed and fallen stars per period | ~60s | 1m 33s | 2m 16s | — | — | 1.8m | 1.6m |
+| 05 | Settings persist across relaunch and Reset needs exact confirmation | — | 46s | 1m 6s | — | — | 58.2s | 39.1s |
+| 06 | Seeded demo data fills Sky and Stats | — | 19s | 33s | — | — | 28.5s | 19.4s |
 | 07 | A session that ended while the app was killed counts as completed | ~70s | 1m 30s | 1m 43s | — | — | 1.6m | 1.5m |
-| 08 | A Give-up dialog left open when the session completes does not reappear | ~60s | 1m 16s | 1m 41s | — | — | 1.5m | 1.3m |
-| | **Total** | **~4m 10s** | **7m 31s** | **10m 42s** | — | — | **9.5m** | **7.6m** |
+| 08 | A Give-up dialog left open when the session completes does not reappear | ~60s | 1m 16s | 1m 41s | — | — | 1.4m | 1.3m |
+| | **Total** | **~4m 10s** | **7m 31s** | **10m 42s** | — | — | **8.7m** | **7.6m** |
 
 Mobilewright reports times over a minute in tenths of a minute (1.6m ≈ 1m 36s).
 
 ## Notes: Maestro vs Mobilewright
 
 - **Speed:** Mobilewright was faster on Android (7.6m vs 10m 42s) and slower on iOS
-  (9.5m vs 7m 31s). Excluding the ~4m 10s of fixed waiting, the tool overhead is roughly
-  Maestro 3m 21s / Mobilewright 5m 20s on iOS, and Maestro 6m 32s / Mobilewright 3m 26s on Android.
+  (8.7m vs 7m 31s). Excluding the ~4m 10s of fixed waiting, the tool overhead is roughly
+  Maestro 3m 21s / Mobilewright 4m 30s on iOS, and Maestro 6m 32s / Mobilewright 3m 26s on Android.
+  On iOS every Mobilewright action reads the screen at least twice (~0.77 s per read), so a tap
+  costs ~2 s. See [COMPARISON.md](COMPARISON.md).
 - **Writing tests:** Mobilewright is TypeScript, so tests import the app's `src/testIds.ts`
   directly, and helpers are plain functions. Maestro YAML is shorter to read but IDs are copied
   by hand.
