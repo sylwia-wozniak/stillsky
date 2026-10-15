@@ -7,14 +7,14 @@ tags: [smoke]
     permissions:
       all: allow   # Android debug builds ask for local-network access (Metro)
 - assertVisible: { id: onboarding.beginButton }
-- tapOn: { id: onboarding.nameInput }
+- tapOn: { id: onboarding.nameInput, waitToSettleTimeoutMs: 500 }
 - inputText: "   "
 - assertVisible: { id: onboarding.nameError }
-- tapOn: { id: onboarding.beginButton }   # disabled: nothing happens
+- tapOn: { id: onboarding.beginButton, waitToSettleTimeoutMs: 500 }   # disabled: nothing happens
 - assertVisible: { id: onboarding.nameInput }
 - eraseText: 5
 - inputText: "Ada"
-- tapOn: { id: onboarding.beginButton }
+- tapOn: { id: onboarding.beginButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: tabs.focus }
 - assertVisible: { id: tabs.settings }
 - stopApp

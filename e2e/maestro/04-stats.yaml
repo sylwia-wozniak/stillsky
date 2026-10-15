@@ -3,30 +3,30 @@ name: Stats count completed and fallen stars per period
 tags: [slow]
 ---
 - runFlow: common/fresh-start.yaml
-- tapOn: { id: tabs.stats }
+- tapOn: { id: tabs.stats, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: stats.emptyState }
-- tapOn: { id: tabs.focus }
+- tapOn: { id: tabs.focus, waitToSettleTimeoutMs: 500 }
 # one fallen star
-- tapOn: { id: focus.duration.1 }
-- tapOn: { id: focus.startButton }
-- tapOn: { id: focus.giveUpButton }
-- tapOn: { id: dialog.confirmButton }
+- tapOn: { id: focus.duration.1, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: focus.startButton, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: focus.giveUpButton, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: dialog.confirmButton, waitToSettleTimeoutMs: 500 }
 # one earned star
-- tapOn: { id: focus.duration.1 }
-- tapOn: { id: focus.intention.reading }
-- tapOn: { id: focus.startButton }
+- tapOn: { id: focus.duration.1, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: focus.intention.reading, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: focus.startButton, waitToSettleTimeoutMs: 500 }
 - extendedWaitUntil:
     visible: { id: focus.completedMessage }
     timeout: 75000
-- tapOn: { id: focus.doneButton }
-- tapOn: { id: tabs.stats }
+- tapOn: { id: focus.doneButton, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: tabs.stats, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: stats.totalTime, text: "1m" }
 - assertVisible: { id: stats.completed, text: "1" }
 - assertVisible: { id: stats.failed, text: "1" }
 - assertVisible: { id: stats.successRate, text: "50%" }
 - assertVisible: { id: stats.intention.reading, text: "1m" }
-- tapOn: { id: stats.period.week }
+- tapOn: { id: stats.period.week, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: stats.bar.6 }
 - assertNotVisible: { id: stats.bar.7 }
-- tapOn: { id: stats.period.month }
+- tapOn: { id: stats.period.month, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: stats.bar.27 }          # every month has at least 28 days

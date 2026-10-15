@@ -3,35 +3,35 @@ name: Settings persist across relaunch and Reset needs exact confirmation
 tags: [smoke]
 ---
 - runFlow: common/fresh-start.yaml
-- tapOn: { id: tabs.settings }
-- tapOn: { id: settings.nameInput }
+- tapOn: { id: tabs.settings, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: settings.nameInput, waitToSettleTimeoutMs: 500 }
 - eraseText: 5
 - inputText: "Grace"
-- tapOn: { id: settings.saveNameButton }
+- tapOn: { id: settings.saveNameButton, waitToSettleTimeoutMs: 500 }
 - hideKeyboard
 # 40 is off-screen: swipe the horizontal picker first
 - swipe:
     from: { id: settings.duration.25 }
     direction: LEFT
-- tapOn: { id: settings.duration.40 }
+- tapOn: { id: settings.duration.40, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: settings.duration.40, selected: true }
-- tapOn: { id: settings.soundToggle }
+- tapOn: { id: settings.soundToggle, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: settings.soundToggle, checked: false }
 - stopApp
 - launchApp
 - assertVisible: { id: focus.greeting, text: ".*Grace" }
 - assertVisible: { id: focus.duration.40, selected: true }
-- tapOn: { id: tabs.settings }
+- tapOn: { id: tabs.settings, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: settings.soundToggle, checked: false }
 - assertVisible: { id: settings.keepAwakeToggle, checked: true }
 - scrollUntilVisible:
     element: { id: settings.resetButton }
-- tapOn: { id: settings.resetButton }
-- tapOn: { id: dialog.input }
+- tapOn: { id: settings.resetButton, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: dialog.input, waitToSettleTimeoutMs: 500 }
 - inputText: "reset"
 - assertVisible: { id: dialog.confirmButton, enabled: false }
 - eraseText: 5
 - inputText: "RESET"
 - assertVisible: { id: dialog.confirmButton, enabled: true }
-- tapOn: { id: dialog.confirmButton }
+- tapOn: { id: dialog.confirmButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: onboarding.nameInput }

@@ -5,7 +5,7 @@ appId: com.stillsky
     clearState: true
     permissions:
       all: allow   # Android debug builds ask for local-network access (Metro)
-- tapOn: { id: onboarding.nameInput }
+- tapOn: { id: onboarding.nameInput, waitToSettleTimeoutMs: 500 }
 - inputText: "Ada"
-- tapOn: { id: onboarding.beginButton }
+- tapOn: { id: onboarding.beginButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: tabs.focus }

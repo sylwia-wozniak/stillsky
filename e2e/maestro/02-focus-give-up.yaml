@@ -5,16 +5,16 @@ tags: [smoke]
 - runFlow: common/fresh-start.yaml
 - assertVisible: { id: focus.greeting, text: ".*Ada" }
 - assertVisible: { id: focus.duration.25, selected: true }
-- tapOn: { id: focus.duration.1 }
-- tapOn: { id: focus.intention.study }
-- tapOn: { id: focus.startButton }
+- tapOn: { id: focus.duration.1, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: focus.intention.study, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: focus.startButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: focus.timerText }
 - assertNotVisible: { id: tabs.sky }          # tab bar hidden while focusing
-- tapOn: { id: focus.giveUpButton }
+- tapOn: { id: focus.giveUpButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: dialog.message, text: "Your star will fall. Give up?" }
-- tapOn: { id: dialog.cancelButton }
+- tapOn: { id: dialog.cancelButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: focus.timerText }      # still running
-- tapOn: { id: focus.giveUpButton }
-- tapOn: { id: dialog.confirmButton }
+- tapOn: { id: focus.giveUpButton, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: dialog.confirmButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: focus.startButton }
 - assertVisible: { id: tabs.sky }

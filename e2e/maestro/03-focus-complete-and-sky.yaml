@@ -3,19 +3,19 @@ name: Completing a 1-minute session lights the first star
 tags: [slow]
 ---
 - runFlow: common/fresh-start.yaml
-- tapOn: { id: tabs.sky }
+- tapOn: { id: tabs.sky, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: sky.emptyState }
-- tapOn: { id: tabs.focus }
-- tapOn: { id: focus.duration.1 }
-- tapOn: { id: focus.startButton }
+- tapOn: { id: tabs.focus, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: focus.duration.1, waitToSettleTimeoutMs: 500 }
+- tapOn: { id: focus.startButton, waitToSettleTimeoutMs: 500 }
 - extendedWaitUntil:
     visible: { id: focus.completedMessage }
     timeout: 75000
-- tapOn: { id: focus.viewInSkyButton }
+- tapOn: { id: focus.viewInSkyButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: sky.litCount, text: "1 star lit" }
-- tapOn: { id: sky.constellation.littleDipper }
+- tapOn: { id: sky.constellation.littleDipper, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: sky.cardName, text: "Little Dipper" }
 - assertVisible: { id: sky.cardProgress, text: "1/7 stars" }
 - assertVisible: { id: sky.cardDate, text: "In progress" }
-- tapOn: { id: sky.cardClose }
+- tapOn: { id: sky.cardClose, waitToSettleTimeoutMs: 500 }
 - assertNotVisible: { id: sky.card }
