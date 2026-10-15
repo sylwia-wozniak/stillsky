@@ -23,6 +23,7 @@ export const TID = {
     completedMessage: 'focus.completedMessage',
     viewInSkyButton: 'focus.viewInSkyButton',
     doneButton: 'focus.doneButton',
+    durationPicker: 'focus.durationPicker',
     duration: (m: number) => `focus.duration.${m}`,
     intention: (t: Intention) => `focus.intention.${t}`,
   },
@@ -57,6 +58,7 @@ export const TID = {
   settings: {
     nameInput: 'settings.nameInput',
     saveNameButton: 'settings.saveNameButton',
+    durationPicker: 'settings.durationPicker',
     nameError: 'settings.nameError',
     duration: (m: number) => `settings.duration.${m}`,
     soundToggle: 'settings.soundToggle',

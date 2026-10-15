@@ -13,6 +13,7 @@ export function IntentionChips({
 }) {
   return (
     <ScrollView
+      keyboardShouldPersistTaps="handled"
       horizontal
       showsHorizontalScrollIndicator={false}
       style={{ flexGrow: 0 }}

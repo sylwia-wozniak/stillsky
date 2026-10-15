@@ -9,6 +9,8 @@ interface DurationPickerProps {
   value: number;
   onChange(min: number): void;
   testIdFor(min: number): string;
+  /** testID of the scrollable list itself, so tests can swipe it. */
+  testID: string;
 }
 
 export function DurationPicker({
@@ -16,6 +18,7 @@ export function DurationPicker({
   value,
   onChange,
   testIdFor,
+  testID,
 }: DurationPickerProps) {
   const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
   const viewportWidth = useRef(0);
@@ -41,6 +44,9 @@ export function DurationPicker({
   return (
     <ScrollView
       ref={scrollRef}
+      testID={testID}
+      // A tap on a chip while the keyboard is open must select it, not just close the keyboard.
+      keyboardShouldPersistTaps="handled"
       horizontal
       showsHorizontalScrollIndicator={false}
       style={{ flexGrow: 0 }}

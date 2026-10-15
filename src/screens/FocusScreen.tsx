@@ -206,6 +206,7 @@ export function FocusScreen() {
           value={duration}
           onChange={setDuration}
           testIdFor={TID.focus.duration}
+          testID={TID.focus.durationPicker}
         />
         <Text style={styles.label}>Intention</Text>
         <IntentionChips value={intention} onChange={setIntention} />

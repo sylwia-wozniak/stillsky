@@ -81,6 +81,7 @@ export function SettingsScreen() {
           value={settings.defaultDurationMin}
           onChange={m => updateSettings({ defaultDurationMin: m })}
           testIdFor={TID.settings.duration}
+          testID={TID.settings.durationPicker}
         />
 
         <View style={styles.card}>
