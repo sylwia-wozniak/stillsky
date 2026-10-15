@@ -1,28 +1,29 @@
-# Maestro vs Mobilewright
+# Maestro vs Mobilewright vs Appium
 
-The same 8 Stillsky scenarios automated with both tools, on an iPhone 17 Pro simulator (iOS 26)
+The same 8 Stillsky scenarios automated with three tools, on an iPhone 17 Pro simulator (iOS 26)
 and a Pixel 9 emulator (Android 17). Timings and run conditions are in [BENCHMARKS.md](BENCHMARKS.md).
 
 ## At a glance
 
-| | Maestro 2.0.10 | Mobilewright 0.0.66 |
-|---|---|---|
-| **Tests are written in** | YAML | TypeScript (Playwright-style API) |
-| **Setup** | One CLI install | `npm install` per project; one-time helper agent on each iOS simulator |
-| **Locators** | `id:` strings copied into YAML | Imports `src/testIds.ts`, so IDs can't drift from the app |
-| **Suite time, iOS** | **7m 31s** | 8.7m |
-| **Suite time, Android** | 10m 42s (9m 14s tuned) | **7.6m** |
-| **Time per action, iOS** | ~1 s (estimated from flow times) | ~2 s per tap, ~4.7 s per text fill (measured) |
-| **Waiting** | Automatic between steps | Automatic in actions and `expect()` |
-| **Clean state per test** | `launchApp: clearState: true` | `device.clearAppData()` in a helper |
-| **Permissions** | `permissions: { all: allow }` | Grant yourself (`adb shell pm grant` on Android) |
-| **Horizontal lists** | `swipe: from: <element>` just works | Needed a custom helper (see challenges) |
-| **Assertions** | visible / not visible / text / selected / checked / enabled | Same set, plus `toBeDisabled`, `toBeFocused`, soft asserts |
-| **Runner features** | Tags, `runFlow`, `when: platform` | Projects per platform, retries, workers, HTML/JUnit reports, fixtures |
-| **Debugging** | Screenshots and logs in `~/.maestro/tests/` | Error context, accessibility tree on failure, own timing code |
-| **Maturity** | Established, large community | Very new (0.0.x), small community |
+| | Maestro 2.0.10 | Mobilewright 0.0.66 | Appium 3.8 + WebdriverIO 10 |
+|---|---|---|---|
+| **Tests are written in** | YAML | TypeScript (Playwright-style API) | TypeScript (any WebDriver language) |
+| **Setup** | One CLI install | `npm install`; one-time agent on each iOS simulator | `npm install`, Appium drivers, WebDriverAgent build on first iOS run, capabilities |
+| **Locators** | `id:` strings copied into YAML | Imports `src/testIds.ts` | Imports `src/testIds.ts`; selector differs per platform |
+| **Suite time, iOS** | 7m 31s | 8.7m | **6m 44s** |
+| **Suite time, Android** | 10m 42s (9m 14s tuned) | **7.6m** | **7m 34s** |
+| **Time per action, iOS** | ~1 s (estimated) | ~2 s per tap, ~4.7 s per text fill (measured) | ~0.5 s (estimated from test times) |
+| **Waits before a tap** | Whole screen to settle | Target element to stop moving | Only for the element to exist |
+| **Clean state per test** | `launchApp: clearState: true` | `device.clearAppData()` | `mobile: clearApp` (Android); manual data wipe (iOS) |
+| **Permissions** | `permissions: { all: allow }` | Grant yourself | `autoGrantPermissions` + grant after clearing data |
+| **Horizontal lists** | `swipe` from an element just works | Needed a custom helper | Native drag commands worked first time |
+| **Runner features** | Tags, `runFlow`, `when: platform` | Projects, retries, workers, reports, fixtures | Mocha/Jasmine/Cucumber, retries, many reporters, device clouds |
+| **Debugging** | Screenshots and logs per run | Error context, accessibility tree on failure | Appium server log, Appium Inspector, screenshots on failure |
+| **Maturity** | Established, large community | Very new (0.0.x), small community | Industry standard, largest community |
 
-## The same step in both
+All three passed 8 of 8 on both platforms.
+
+## The same step in all three
 
 Give up a running session and confirm the dialog:
 
@@ -42,8 +43,27 @@ await screen.getByTestId(TID.dialog.confirmButton).tap();
 await expect(screen.getByTestId(TID.focus.startButton)).toBeVisible();
 ```
 
-Equally readable. Maestro needs no programming; Mobilewright gives you types, autocompletion
-and shared helpers.
+```ts
+// Appium + WebdriverIO (el() picks the iOS or Android selector)
+await el(TID.focus.giveUpButton).click();
+await expect(el(TID.dialog.message)).toHaveText('Your star will fall. Give up?');
+await el(TID.dialog.confirmButton).click();
+await expect(el(TID.focus.startButton)).toBeDisplayed();
+```
+
+All equally readable. Maestro needs no programming; Mobilewright and Appium give you types,
+autocompletion and shared helpers.
+
+## Why Appium is fastest on iOS
+
+Appium (through WebdriverIO) finds an element and taps it right away. It waits only until the
+element exists; it doesn't check that the element has stopped moving (Mobilewright) or that the
+whole screen has settled (Maestro). That makes each action cheap: test 01 does about 14 actions
+plus an app launch and relaunch in **10 s on iOS**, compared with 21 s for Maestro and 23.8 s for
+Mobilewright.
+
+The trade-off is that a tap can land during an animation. That didn't cause any failures in our
+runs, but on apps with long transitions you may need explicit waits.
 
 ## Why Mobilewright is slower on iOS
 
@@ -56,16 +76,14 @@ Measured on an idle Mac:
 | Fill a text field (tap, clear, type) | ~4.7 s |
 | Clear app data / launch app | 0.5 s / 2.6 s |
 
-On Android one screen read takes ~0.2 s, which is why Mobilewright is the faster tool there.
-The iOS cost is fixed per read and doesn't depend on screen size. Turning simulator animations
-off made no difference. A typical test does 15–25 actions, so iOS pays roughly 30–50 s of overhead
-per test.
+On Android one screen read takes ~0.2 s, which is why Mobilewright is fast there. The iOS cost is
+fixed per read and doesn't depend on screen size. Turning simulator animations off made no
+difference. A typical test does 15–25 actions, so iOS pays roughly 30–50 s of overhead per test.
 
 ## Why Maestro is slower on Android
 
-Before every tap, Maestro waits for the **whole screen** to stop changing. Mobilewright only
-checks that the **element it's about to tap** has stopped moving. Stillsky's Focus screen has a
-countdown that changes every second, and that's what exposes the difference.
+Before every tap, Maestro waits for the **whole screen** to stop changing. Stillsky's Focus screen
+has a countdown that changes every second, and that's what exposes it.
 
 From the Maestro log of flow 02 on Android:
 
@@ -85,7 +103,8 @@ From the Maestro log of flow 02 on Android:
 | Cancel in the dialog | 8.2 s | countdown ticking behind it |
 | Duration chip | 2.7 s | nothing moving |
 
-The same Give-up tap takes 2.6 s with Maestro on iOS and an estimated 0.9 s with Mobilewright on Android (two 0.2 s reads plus the tap).
+The same Give-up tap takes 2.6 s with Maestro on iOS and an estimated 0.9 s with Mobilewright on
+Android (two 0.2 s reads plus the tap).
 
 ### Why it happens (from Maestro's source)
 
@@ -101,8 +120,8 @@ Both platforms call `waitForAppToSettle` before a tap, but they decide "settled"
     hashes.
   - A countdown that changes once a second is almost never caught between two screenshots that
     close together, so the screen counts as "static" within about 0.3 s.
-- **Mobilewright, both platforms:** it checks only the target element's position across two reads.
-  The countdown elsewhere doesn't matter.
+- **Mobilewright** only checks the target element's position, and **Appium** doesn't wait at all,
+  so the countdown elsewhere doesn't affect either of them.
 
 This is about Maestro's design, not a bug in the app. Any screen with something constantly
 changing (a timer, a progress animation, a video, a spinner) will slow Maestro's taps on Android.
@@ -121,15 +140,16 @@ With a 500 ms limit on the four taps over the countdown screen, flow 02 on Andro
 **76.8 s to 40.7 s** (Give up: 14.1 s → 2.7 s). All flows in `e2e/maestro/` now use this
 setting on every tap. Whole suite, all 8 flows passing:
 
-| Maestro | iOS | Android |
+| | iOS | Android |
 |---|---:|---:|
-| Default settings | 7m 31s | 10m 42s |
-| Tuned (`waitToSettleTimeoutMs: 500`) | 7m 32s | **9m 14s** |
+| Maestro, default settings | 7m 31s | 10m 42s |
+| Maestro, tuned (`waitToSettleTimeoutMs: 500`) | 7m 32s | **9m 14s** |
 | Mobilewright, for reference | 8.7m | 7.6m |
+| Appium, for reference | 6m 44s | 7m 34s |
 
 Tuning saves 1m 28s on Android and nothing on iOS, where the settle check was already fast. Maestro
-is still slower than Mobilewright on Android. The remaining gap is its normal per-step cost on
-Android: 2.7–2.8 s measured for a tap on a still screen, compared with an estimated 0.9 s for Mobilewright.
+is still the slowest on Android because of its normal per-step cost there: 2.7–2.8 s measured for
+a tap on a still screen.
 
 ## Challenges we hit
 
@@ -164,12 +184,31 @@ Android: 2.7–2.8 s measured for a tap on a still screen, compared with an esti
   Android emulator (`pkill -f mobilecli`).
 - **Young API:** some options are only documented in the type definitions.
 
+### Appium
+
+- **Version matching with Xcode.** The newest XCUITest driver (12.18.x) ships a WebDriverAgent that
+  needs a newer Xcode than 26.0.1, and every iOS session failed with `xcodebuild failed with code
+  65`. Pinning driver **12.13.2** fixed it. Expect to manage driver ↔ Xcode versions.
+- **`~id` means different things per platform.** On iOS it's the testID; on Android it's the
+  accessibility label, and the testID is the resource-id. A small `el()` helper picks the right
+  selector.
+- **No "clear app data" on iOS simulators.** Android has `mobile: clearApp`; on iOS the helper
+  empties the app's data folder with `xcrun simctl`.
+- **Waits are your job.** After clearing data, the debug app reloads its bundle from Metro and
+  needed more than WebdriverIO's 5 s default, so the helper waits up to 30 s for the first screen.
+  This made 7 of 8 Android tests fail until fixed.
+- **Switch state differs per platform:** Android reports `checked`, iOS reports a value of `1`/`0`.
+- **Most moving parts:** Appium server, two drivers, WebDriverAgent on iOS, a WebdriverIO config,
+  and capabilities per platform. The WebdriverIO Appium service starts the server for you.
+
 ## Which one when
 
-- **Maestro:** quick smoke tests, people who don't code, the fastest iOS runs, simple flows.
-- **Mobilewright:** TypeScript teams, tests that share code with the app (IDs, helpers), stricter
-  assertions, Playwright-style reports and retries, and Android-heavy suites.
-- **Both found the same app behaviour,** but Mobilewright's stricter interaction (no hidden
+- **Maestro:** quick smoke tests, people who don't code, simple flows. Set
+  `waitToSettleTimeoutMs` if your app has live timers or animations.
+- **Mobilewright:** TypeScript teams that like Playwright, tests that share code with the app,
+  strict "element must be stable" taps, and Android-heavy suites. Young, so expect rough edges.
+- **Appium:** the industry standard. Fastest here on iOS and level with Mobilewright on Android,
+  works with every device cloud and many languages, and has the biggest community. The cost is
+  setup: more pieces, version matching, and writing your own waits.
+- **All three found the same app behaviour,** but Mobilewright's stricter interaction (no hidden
   keyboard) caught one bug that Maestro missed.
-
-Next: the same scenarios in **Appium** to complete the comparison.
