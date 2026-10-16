@@ -3,31 +3,33 @@
 How long the end-to-end suites take, per tool and platform, so Maestro, Appium and Mobilewright
 can be compared on the same scenarios.
 
-**When to update this file:** only when the number of flows changes, or when a new tool
-(Appium, Mobilewright) covers the same scenarios. Don't update it for ordinary re-runs.
+**When to update this file:** when the number of flows changes, when a tool covers the same
+scenarios for the first time, or when the platform setup changes (Xcode, simulator, emulator
+image). Replace the old numbers instead of adding rows, and don't update it for ordinary re-runs.
 
 ## Summary
 
-| Tool | Version | Platform | Device | Flows | Passed | Total time | Avg / flow | Date | Commit |
-|------|---------|----------|--------|------:|-------:|-----------:|-----------:|------|--------|
-| Maestro | 2.0.10 | iOS 26.0 | iPhone 17 Pro (simulator) | 8 | 8 | 7m 31s | 56s | 2026-10-14 | `5f5e4d3` |
-| Maestro | 2.0.10 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 10m 42s | 1m 20s | 2026-10-14 | `5f5e4d3` |
-| Maestro, tuned¹ | 2.0.10 | iOS 26.0 | iPhone 17 Pro (simulator) | 8 | 8 | 7m 32s | 57s | 2026-10-15 | `05d3d15` |
-| Maestro, tuned¹ | 2.0.10 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 9m 14s | 1m 9s | 2026-10-15 | `05d3d15` |
-| Appium² | 3.8.0 | iOS 26.0 | iPhone 17 Pro (simulator) | 8 | 8 | 6m 44s | 51s | 2026-10-15 | `0b7efbc` |
-| Appium² | 3.8.0 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 7m 34s | 57s | 2026-10-15 | `0b7efbc` |
-| Mobilewright | 0.0.66 | iOS 26.0 | iPhone 17 Pro (simulator) | 8 | 8 | 8.7m | 1m 5s | 2026-10-15 | `cd46444` |
-| Mobilewright | 0.0.66 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 7.6m | 57s | 2026-10-15 | `b2b3022` |
+| Tool | Version | Platform | Device | Flows | Passed | Total time | Avg / flow | Date |
+|------|---------|----------|--------|------:|-------:|-----------:|-----------:|------|
+| Maestro¹ | 2.11.0 | iOS 27.0 | iPhone 18 Pro (simulator) | 8 | 8 | 8m 4s | 1m 1s | 2026-10-16 |
+| Maestro¹ | 2.11.0 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 9m 21s | 1m 10s | 2026-10-16 |
+| Appium² | 3.8.0 | iOS 27.0 | iPhone 18 Pro (simulator) | 8 | 8 | 6m 57s | 52s | 2026-10-16 |
+| Appium² | 3.8.0 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 7m 32s | 57s | 2026-10-16 |
+| Mobilewright | 0.0.66 | iOS 27.0 | iPhone 18 Pro (simulator) | 8 | 8 | 9.3m | 1m 10s | 2026-10-16 |
+| Mobilewright³ | 0.0.66 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 7.3m | 55s | 2026-10-16 |
 
 ¹ Every `tapOn` sets `waitToSettleTimeoutMs: 500`, so a tap waits at most 0.5 s for the screen to
-stop changing. This is what the flows in `e2e/maestro/` use now. The plain "Maestro" rows were
-measured with Maestro's defaults (commit `5f5e4d3`); remove the option to reproduce them. See
-[COMPARISON.md](COMPARISON.md#why-maestro-is-slower-on-android) for why it matters on Android.
+stop changing (see [COMPARISON.md](COMPARISON.md#why-maestro-is-slower-on-android)). On iOS, the
+keyboard is closed with its Done key before tapping a button below a text field
+(`common/hide-keyboard-ios.yaml`, see [COMPARISON.md](COMPARISON.md#maestro)).
 
-² WebdriverIO 10 + Mocha, UiAutomator2 driver 8.7.0, XCUITest driver 12.13.2 (the newest that
-builds WebDriverAgent with Xcode 26.0.1). Totals are whole runs and include starting an Appium
-session for every spec (about 4 s on Android, 5 s on iOS); per-scenario times below are the test
-bodies only. Load average was 8–17 during these runs, a bit higher than for the other tools.
+² WebdriverIO 10 + Mocha, UiAutomator2 driver 8.7.0, XCUITest driver 12.18.1. Totals are whole
+runs and include starting an Appium session for every spec (about 4 s on Android, 5 s on iOS);
+per-scenario times below are the test bodies only.
+
+³ Two earlier runs on the same setup failed one and two tests: Mobilewright read an empty
+screen (`no XML content found in uiautomator dump`, or no matching element) while the emulator was
+busy drawing in software (see Run conditions). The third run passed 8 of 8; its times are shown.
 
 ## Per scenario
 
@@ -37,71 +39,68 @@ tool overhead.
 
 | # | Scenario | Fixed wait | Maestro iOS | Maestro Android | Appium iOS | Appium Android | Mobilewright iOS | Mobilewright Android |
 |---|----------|-----------:|------------:|----------------:|-----------:|---------------:|-----------------:|---------------------:|
-| 01 | Onboarding validates the name and is skipped on relaunch | — | 21s | 29s | 10.1s | 19.2s | 23.8s | 20.6s |
-| 02 | Giving up asks for confirmation and makes the star fall | — | 25s | 1m 18s | 12.1s | 22.6s | 31.7s | 29.6s |
-| 03 | Completing a 1-minute session lights the first star | ~60s | 1m 21s | 1m 36s | 1m 12s | 1m 19s | 1.5m | 1.4m |
-| 04 | Stats count completed and fallen stars per period | ~60s | 1m 33s | 2m 16s | 1m 18s | 1m 27s | 1.8m | 1.6m |
-| 05 | Settings persist across relaunch and Reset needs exact confirmation | — | 46s | 1m 6s | 28.3s | 33.0s | 58.2s | 39.1s |
-| 06 | Seeded demo data fills Sky and Stats | — | 19s | 33s | 10.8s | 16.8s | 28.5s | 19.4s |
-| 07 | A session that ended while the app was killed counts as completed | ~70s | 1m 30s | 1m 43s | 1m 22s | 1m 31s | 1.6m | 1.5m |
-| 08 | A Give-up dialog left open when the session completes does not reappear | ~60s | 1m 16s | 1m 41s | 1m 9s | 1m 17s | 1.4m | 1.3m |
-| | **Total** | **~4m 10s** | **7m 31s** | **10m 42s** | **6m 44s** | **7m 34s** | **8.7m** | **7.6m** |
+| 01 | Onboarding validates the name and is skipped on relaunch | — | 26s | 32s | 14.2s | 20.7s | 33.2s | 19.9s |
+| 02 | Giving up asks for confirmation and makes the star fall | — | 31s | 42s | 13.6s | 24.6s | 34.7s | 25.8s |
+| 03 | Completing a 1-minute session lights the first star | ~60s | 1m 25s | 1m 34s | 1m 13s | 1m 19s | 1.6m | 1.3m |
+| 04 | Stats count completed and fallen stars per period | ~60s | 1m 37s | 1m 52s | 1m 19s | 1m 27s | 1.9m | 1.5m |
+| 05 | Settings persist across relaunch and Reset needs exact confirmation | — | 50s | 1m 1s | 30.7s | 32.5s | 1.1m | 35.5s |
+| 06 | Seeded demo data fills Sky and Stats | — | 22s | 29s | 12.2s | 17.0s | 31.8s | 17.7s |
+| 07 | A session that ended while the app was killed counts as completed | ~70s | 1m 34s | 1m 42s | 1m 24s | 1m 31s | 1.6m | 1.5m |
+| 08 | A Give-up dialog left open when the session completes does not reappear | ~60s | 1m 20s | 1m 29s | 1m 11s | 1m 17s | 1.4m | 1.3m |
+| | **Total** | **~4m 10s** | **8m 4s** | **9m 21s** | **6m 57s** | **7m 32s** | **9.3m** | **7.3m** |
 
 Mobilewright reports times over a minute in tenths of a minute (1.6m ≈ 1m 36s).
 
-### Maestro: default vs tuned
-
-| # | Scenario | Default iOS | Tuned iOS | Default Android | Tuned Android |
-|---|----------|------------:|----------:|----------------:|--------------:|
-| 01 | Onboarding | 21s | 20s | 29s | 28s |
-| 02 | Give up with confirmation | 25s | 27s | 1m 18s | **41s** |
-| 03 | 1-minute session lights a star | 1m 21s | 1m 22s | 1m 36s | 1m 33s |
-| 04 | Stats | 1m 33s | 1m 33s | 2m 16s | **1m 53s** |
-| 05 | Settings and Reset | 46s | 45s | 1m 6s | 59s |
-| 06 | Demo data | 19s | 19s | 33s | 30s |
-| 07 | Session ends while app is killed | 1m 30s | 1m 29s | 1m 43s | 1m 41s |
-| 08 | Stale Give-up dialog | 1m 16s | 1m 17s | 1m 41s | 1m 29s |
-| | **Total** | **7m 31s** | **7m 32s** | **10m 42s** | **9m 14s** |
-
-The tuning only matters where taps happen on a screen that keeps changing (the countdown in 02,
-04 and 08). iOS is unchanged because its settle check was already fast.
-
 ## Notes: Maestro vs Mobilewright vs Appium
 
-- **Speed:** Mobilewright was faster on Android (7.6m vs 10m 42s default, 9m 14s tuned) and slower on iOS
-  (8.7m vs 7m 31s). Excluding the ~4m 10s of fixed waiting, the tool overhead is roughly
-  Maestro 3m 21s / Mobilewright 4m 30s on iOS, and Maestro 6m 32s / Mobilewright 3m 26s on Android.
-  On iOS every Mobilewright action reads the screen at least twice (~0.77 s per read), so a tap
-  costs ~2 s. See [COMPARISON.md](COMPARISON.md).
-- **Appium** was fastest on iOS (6m 44s) and level with Mobilewright on Android (7m 34s vs 7.6m).
-  It taps as soon as an element exists, without Maestro's screen-settle wait or Mobilewright's
-  element-stability check.
-- **Writing tests:** Mobilewright is TypeScript, so tests import the app's `src/testIds.ts`
-  directly, and helpers are plain functions. Maestro YAML is shorter to read but IDs are copied
-  by hand.
-- **Horizontal lists:** Maestro's element `swipe` worked as is. Mobilewright needed a custom helper:
-  `scrollIntoViewIfNeeded()` is vertical only, `locator.swipe()` flings too far, and visibility of
-  scroll-view items differs between iOS and Android.
+- **Speed:** Appium was fastest on iOS (6m 57s), and Mobilewright on Android (7.3m, just ahead of
+  Appium's 7m 32s). Excluding the ~4m 10s of fixed waiting, the tool overhead is roughly:
+  - iOS: Appium 2m 47s, Maestro 3m 54s, Mobilewright 5m 8s.
+  - Android: Mobilewright 3m 8s, Appium 3m 22s, Maestro 5m 11s.
+- **Why Appium is fast:** it taps as soon as an element exists, without Maestro's screen-settle
+  wait or Mobilewright's element-stability check.
+- **Why Mobilewright is slow on iOS:** every action reads the screen at least twice (~0.77 s per
+  read), so a tap costs ~2 s. See [COMPARISON.md](COMPARISON.md#why-mobilewright-is-slower-on-ios).
+- **Writing tests:** Mobilewright and Appium are TypeScript, so tests import the app's
+  `src/testIds.ts` directly, and helpers are plain functions. Maestro YAML is shorter to read but
+  IDs are copied by hand.
+- **Horizontal lists:** Maestro's element `swipe` worked as is, and Appium's native drag commands
+  worked first time. Mobilewright needed a custom helper: `scrollIntoViewIfNeeded()` is vertical
+  only, `locator.swipe()` flings too far, and visibility of scroll-view items differs between iOS
+  and Android.
 - **Keyboard:** the Mobilewright run found a real bug (first chip tap only closed the Android
-  keyboard) that the Maestro flow hid with `hideKeyboard`.
-- **Setup:** Mobilewright needs a one-time agent install on iOS simulators
+  keyboard) that the Maestro flow hid with `hideKeyboard`. On iOS 27, Maestro needs the keyboard
+  closed before tapping a button below a text field.
+- **Setup:** Mobilewright needs a one-time agent install on each iOS simulator
   (`npx mobilewright install`) and nothing on Android. Its `mobilecli` process can keep the
   Android emulator's automation busy afterwards, so stop it before running Maestro on the same
   emulator.
 
 ## Run conditions
 
-Keep these the same when adding a new tool, or note what differs.
+Keep these the same when re-measuring, or note what differs.
 
-- **Machine:** Mac with Apple M1 Max, Xcode 26.0.1, Android Studio emulator.
+- **Machine:** Mac with Apple M1 Max (10 cores, 64 GB), Xcode 27.0, Android emulator 37.2.12.
+- **Devices:** iPhone 18 Pro simulator on iOS 27.0; Pixel 9 AVD on Android 17 (API 37, Google
+  Play image). The API 37 image forces software rendering (SwiftShader), so the emulator draws on
+  the CPU and gets slower while the app animates.
 - **Build:** debug build with Metro running (needed for the 1-minute duration and Seed demo data).
-- **State:** every flow starts from cleared app data; the suite runs one platform at a time.
+- **State:** every flow starts from cleared app data.
+- **One suite at a time, on a fresh setup:** before each tool/platform run, Metro is restarted with
+  `--reset-cache`, leftover tool processes are stopped (Appium server, `mobilecli`), and only one
+  device runs: the simulator for iOS, or a freshly booted emulator for Android, waited on until it
+  settles. The run starts only when the Mac's CPU is at least 70% idle.
 - **Commands:**
   ```bash
   maestro --device <ios-simulator-udid> test e2e/maestro
   maestro --device emulator-5554 test e2e/maestro
-  cd e2e/mobilewright && npx mobilewright test --project ios   # or --project android
   cd e2e/appium && npm run test:ios                              # or test:android
+  cd e2e/mobilewright && npx mobilewright test --project ios   # or --project android
   ```
-- Run while the Mac is otherwise idle. A loaded machine (high load average) makes simulator
-  automation slow and flaky, which skews these numbers.
+  Set `MAESTRO_DRIVER_STARTUP_TIMEOUT=240000` on a freshly booted device, where Maestro's driver
+  can take longer than its default to start.
+- **What skewed earlier attempts:** right after a macOS update, Spotlight and Photos media
+  analysis re-index for many hours; an emulator left running for hours (or one that had been
+  force-killed) got slower until Appium's `adb shell dumpsys` calls hung, which wiping its data
+  fixed; and a fresh iOS 27 simulator boot starts ~270 processes and keeps the disk busy for a
+  long time. Measure only after these settle.

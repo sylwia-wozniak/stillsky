@@ -68,8 +68,8 @@ Stillsky is a practice target for mobile E2E testing with **Appium**, **Mobilewr
 
 ## Getting started
 
-**Prerequisites:** Node 20+, Xcode + CocoaPods for iOS, Android Studio with an emulator and JDK 17+
-for Android. In `~/.zshrc`:
+**Prerequisites:** Node 20+, Xcode 27 + CocoaPods for iOS (E2E suites use an iPhone 18 Pro
+simulator on iOS 27), Android Studio with an emulator and JDK 17+ for Android. In `~/.zshrc`:
 
 ```bash
 export ANDROID_HOME=$HOME/Library/Android/sdk
@@ -164,7 +164,9 @@ src/
   screens/      Onboarding, Focus, Sky, Stats, Settings
   components/   Star, SkyCanvas, BarChart, pickers, dialogs, gradient background
   testIds.ts    every test ID in one place
-e2e/maestro/    end-to-end flows
+e2e/maestro/    end-to-end flows (Maestro)
+e2e/mobilewright/  the same scenarios in Mobilewright
+e2e/appium/     the same scenarios in Appium + WebdriverIO
 docs/           design spec, implementation plan, screenshots
 ```
 
