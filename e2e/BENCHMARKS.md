@@ -9,14 +9,14 @@ image). Replace the old numbers instead of adding rows, and don't update it for 
 
 ## Summary
 
-| Tool | Version | Platform | Device | Flows | Passed | Total time | Avg / flow | Date |
-|------|---------|----------|--------|------:|-------:|-----------:|-----------:|------|
-| Maestro¹ | 2.11.0 | iOS 27.0 | iPhone 18 Pro (simulator) | 8 | 8 | 8m 4s | 1m 1s | 2026-10-16 |
-| Maestro¹ | 2.11.0 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 9m 21s | 1m 10s | 2026-10-16 |
-| Appium² | 3.8.0 | iOS 27.0 | iPhone 18 Pro (simulator) | 8 | 8 | 6m 57s | 52s | 2026-10-16 |
-| Appium² | 3.8.0 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 7m 32s | 57s | 2026-10-16 |
-| Mobilewright | 0.0.66 | iOS 27.0 | iPhone 18 Pro (simulator) | 8 | 8 | 9.3m | 1m 10s | 2026-10-16 |
-| Mobilewright³ | 0.0.66 | Android 17 | Pixel 9 (emulator, API 37) | 8 | 8 | 7.3m | 55s | 2026-10-16 |
+| Platform | Tool | Version | Device | Flows | Passed | Total time | Avg / flow | Date |
+|----------|------|---------|--------|------:|-------:|-----------:|-----------:|------|
+| iOS 27.0 | Maestro¹ | 2.11.0 | iPhone 18 Pro (simulator) | 8 | 8 | 8m 4s | 1m 1s | 2026-10-16 |
+| iOS 27.0 | Mobilewright | 0.0.66 | iPhone 18 Pro (simulator) | 8 | 8 | 9.3m | 1m 10s | 2026-10-16 |
+| iOS 27.0 | Appium² | 3.8.0 | iPhone 18 Pro (simulator) | 8 | 8 | **6m 57s** | 52s | 2026-10-16 |
+| Android 17 | Maestro¹ | 2.11.0 | Pixel 9 (emulator, API 37) | 8 | 8 | 9m 21s | 1m 10s | 2026-10-16 |
+| Android 17 | Mobilewright³ | 0.0.66 | Pixel 9 (emulator, API 37) | 8 | 8 | **7.3m** | 55s | 2026-10-16 |
+| Android 17 | Appium² | 3.8.0 | Pixel 9 (emulator, API 37) | 8 | 8 | 7m 32s | 57s | 2026-10-16 |
 
 ¹ Every `tapOn` sets `waitToSettleTimeoutMs: 500`, so a tap waits at most 0.5 s for the screen to
 stop changing (see [COMPARISON.md](COMPARISON.md#why-maestro-is-slower-on-android)). On iOS, the
@@ -37,17 +37,33 @@ Times are wall-clock per flow. The **fixed wait** column is real time the scenar
 regardless of tool (a 1-minute focus session, or 70 s with the app killed). Subtract it to compare
 tool overhead.
 
-| # | Scenario | Fixed wait | Maestro iOS | Maestro Android | Appium iOS | Appium Android | Mobilewright iOS | Mobilewright Android |
-|---|----------|-----------:|------------:|----------------:|-----------:|---------------:|-----------------:|---------------------:|
-| 01 | Onboarding validates the name and is skipped on relaunch | — | 26s | 32s | 14.2s | 20.7s | 33.2s | 19.9s |
-| 02 | Giving up asks for confirmation and makes the star fall | — | 31s | 42s | 13.6s | 24.6s | 34.7s | 25.8s |
-| 03 | Completing a 1-minute session lights the first star | ~60s | 1m 25s | 1m 34s | 1m 13s | 1m 19s | 1.6m | 1.3m |
-| 04 | Stats count completed and fallen stars per period | ~60s | 1m 37s | 1m 52s | 1m 19s | 1m 27s | 1.9m | 1.5m |
-| 05 | Settings persist across relaunch and Reset needs exact confirmation | — | 50s | 1m 1s | 30.7s | 32.5s | 1.1m | 35.5s |
-| 06 | Seeded demo data fills Sky and Stats | — | 22s | 29s | 12.2s | 17.0s | 31.8s | 17.7s |
-| 07 | A session that ended while the app was killed counts as completed | ~70s | 1m 34s | 1m 42s | 1m 24s | 1m 31s | 1.6m | 1.5m |
-| 08 | A Give-up dialog left open when the session completes does not reappear | ~60s | 1m 20s | 1m 29s | 1m 11s | 1m 17s | 1.4m | 1.3m |
-| | **Total** | **~4m 10s** | **8m 4s** | **9m 21s** | **6m 57s** | **7m 32s** | **9.3m** | **7.3m** |
+### iOS 27 (iPhone 18 Pro simulator)
+
+| # | Scenario | Fixed wait | Maestro | Mobilewright | Appium |
+|---|----------|-----------:|--------:|-------------:|-------:|
+| 01 | Onboarding validates the name and is skipped on relaunch | — | 26s | 33.2s | 14.2s |
+| 02 | Giving up asks for confirmation and makes the star fall | — | 31s | 34.7s | 13.6s |
+| 03 | Completing a 1-minute session lights the first star | ~60s | 1m 25s | 1.6m | 1m 13s |
+| 04 | Stats count completed and fallen stars per period | ~60s | 1m 37s | 1.9m | 1m 19s |
+| 05 | Settings persist across relaunch and Reset needs exact confirmation | — | 50s | 1.1m | 30.7s |
+| 06 | Seeded demo data fills Sky and Stats | — | 22s | 31.8s | 12.2s |
+| 07 | A session that ended while the app was killed counts as completed | ~70s | 1m 34s | 1.6m | 1m 24s |
+| 08 | A Give-up dialog left open when the session completes does not reappear | ~60s | 1m 20s | 1.4m | 1m 11s |
+| | **Total** | **~4m 10s** | **8m 4s** | **9.3m** | **6m 57s** |
+
+### Android 17 (Pixel 9 emulator)
+
+| # | Scenario | Fixed wait | Maestro | Mobilewright | Appium |
+|---|----------|-----------:|--------:|-------------:|-------:|
+| 01 | Onboarding validates the name and is skipped on relaunch | — | 32s | 19.9s | 20.7s |
+| 02 | Giving up asks for confirmation and makes the star fall | — | 42s | 25.8s | 24.6s |
+| 03 | Completing a 1-minute session lights the first star | ~60s | 1m 34s | 1.3m | 1m 19s |
+| 04 | Stats count completed and fallen stars per period | ~60s | 1m 52s | 1.5m | 1m 27s |
+| 05 | Settings persist across relaunch and Reset needs exact confirmation | — | 1m 1s | 35.5s | 32.5s |
+| 06 | Seeded demo data fills Sky and Stats | — | 29s | 17.7s | 17.0s |
+| 07 | A session that ended while the app was killed counts as completed | ~70s | 1m 42s | 1.5m | 1m 31s |
+| 08 | A Give-up dialog left open when the session completes does not reappear | ~60s | 1m 29s | 1.3m | 1m 17s |
+| | **Total** | **~4m 10s** | **9m 21s** | **7.3m** | **7m 32s** |
 
 Mobilewright reports times over a minute in tenths of a minute (1.6m ≈ 1m 36s).
 
@@ -55,8 +71,8 @@ Mobilewright reports times over a minute in tenths of a minute (1.6m ≈ 1m 36s)
 
 - **Speed:** Appium was fastest on iOS (6m 57s), and Mobilewright on Android (7.3m, just ahead of
   Appium's 7m 32s). Excluding the ~4m 10s of fixed waiting, the tool overhead is roughly:
-  - iOS: Appium 2m 47s, Maestro 3m 54s, Mobilewright 5m 8s.
-  - Android: Mobilewright 3m 8s, Appium 3m 22s, Maestro 5m 11s.
+  - iOS: Maestro 3m 54s, Mobilewright 5m 8s, Appium 2m 47s.
+  - Android: Maestro 5m 11s, Mobilewright 3m 8s, Appium 3m 22s.
 - **Why Appium is fast:** it taps as soon as an element exists, without Maestro's screen-settle
   wait or Mobilewright's element-stability check.
 - **Why Mobilewright is slow on iOS:** every action reads the screen at least twice (~0.77 s per

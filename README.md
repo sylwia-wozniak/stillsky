@@ -88,8 +88,8 @@ npm run android      # Android emulator
 
 ```bash
 npm test                    # unit tests (Vitest): timer, constellations, stats, storage, validation
-npm run e2e:maestro         # all Maestro flows (~8 min, includes real 1-minute sessions)
-npm run e2e:maestro:smoke   # fast subset (~2 min)
+npm run e2e:maestro         # all Maestro flows (~8–9 min, includes real 1-minute sessions)
+npm run e2e:maestro:smoke   # fast subset (~2–3 min)
 npm run e2e:mobilewright    # Mobilewright suite, iOS then Android (run `npm install` in e2e/mobilewright first)
 npm run e2e:appium:ios      # Appium suite (run `npm install` in e2e/appium first); also e2e:appium:android
 ```

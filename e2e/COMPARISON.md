@@ -12,7 +12,9 @@ and a Pixel 9 emulator (Android 17). Timings and run conditions are in [BENCHMAR
 | **Locators** | `id:` strings copied into YAML | Imports `src/testIds.ts` | Imports `src/testIds.ts`; selector differs per platform |
 | **Suite time, iOS** | 8m 4s | 9.3m | **6m 57s** |
 | **Suite time, Android** | 9m 21s | **7.3m** | 7m 32s |
-| **Time per action, iOS** | ~1 s (estimated) | ~2 s per tap, ~4.7 s per text fill (measured) | ~0.5 s (estimated from test times) |
+| **Tap on a still screen** (iOS / Android) | 1.4 s / 2.2 s | 2.2 s / 0.8 s | ~0.5 s (estimated from test times) |
+| **Code for the 8 scenarios** | 204 lines of YAML | 248 lines of TypeScript | 279 lines of TypeScript |
+| **Installed size** | ~345 MB CLI (Java) | 73 MB, 94 npm packages | 379 MB, ~1,300 npm packages (incl. both drivers) |
 | **Waits before a tap** | Whole screen to settle | Target element to stop moving | Only for the element to exist |
 | **Clean state per test** | `launchApp: clearState: true` | `device.clearAppData()` | `mobile: clearApp` (Android); manual data wipe (iOS) |
 | **Permissions** | `permissions: { all: allow }` | Grant yourself | `autoGrantPermissions` + grant after clearing data |
@@ -21,8 +23,9 @@ and a Pixel 9 emulator (Android 17). Timings and run conditions are in [BENCHMAR
 | **Debugging** | Screenshots and logs per run | Error context, accessibility tree on failure | Appium server log, Appium Inspector, screenshots on failure |
 | **Maturity** | Established, large community | Very new (0.0.x), small community | Industry standard, largest community |
 
-All three passed 8 of 8 on both platforms (Mobilewright on Android needed three runs; see
-[BENCHMARKS.md](BENCHMARKS.md)).
+Lines of code count non-blank, non-comment lines, including helpers and config. Tap times were
+measured on 2026-10-16; Appium's is an estimate from its test times. All three passed 8 of 8 on
+both platforms.
 
 ## The same step in all three
 
@@ -68,44 +71,44 @@ runs, but on apps with long transitions you may need explicit waits.
 
 ## Why Mobilewright is slower on iOS
 
-Measured on an idle Mac:
+Every Mobilewright action reads the whole screen (the accessibility tree) at least twice to check
+that the element has stopped moving. On iOS one read is four times slower than on Android:
 
-| Operation (iOS) | Time |
-|---|---:|
-| Read the screen once (accessibility tree, 45 elements) | ~0.77 s |
-| Tap (reads the screen twice to check the element stopped moving, then taps) | ~2.1 s |
-| Fill a text field (tap, clear, type) | ~4.7 s |
-| Clear app data / launch app | 0.5 s / 2.6 s |
+| Operation | iOS 27 | Android 17 |
+|---|---:|---:|
+| Read the screen once | 0.83 s | 0.2 s |
+| Tap a button | 2.2 s | 0.8 s |
+| Fill a text field (tap, clear, type) | 4.8 s | 1.2 s |
+| Clear app data | 0.65 s | 0.19 s |
+| Launch the app after clearing data (debug build loads its bundle from Metro) | 8.8 s | 5.0 s |
 
-On Android one screen read takes ~0.2 s, which is why Mobilewright is fast there. The iOS cost is
-fixed per read and doesn't depend on screen size. Turning simulator animations off made no
-difference. A typical test does 15–25 actions, so iOS pays roughly 30–50 s of overhead per test.
+So the same test is about twice as fast on Android. On iOS, Mobilewright spends about 18 s more per
+test than Appium (2m 21s over the 8 tests).
 
 ## Why Maestro is slower on Android
 
 Before every tap, Maestro waits for the **whole screen** to stop changing. Stillsky's Focus screen
 has a countdown that changes every second, and that's what exposes it.
 
-From the Maestro log of flow 02 on Android:
+From the Maestro log of flow 02 on Android, without a settle limit:
 
 ```
-09:12:16.86  Tapping on element: Give up
-             (nothing for 10.4 s: waiting for the screen to settle)
-09:12:27.24  Refreshed element
-09:12:27.24  Tapping at (540, 1769)
-09:12:28.79  Something have changed in the UI judging by view hierarchy. Proceed.
+19:51:48.640  Tapping on element: Give up
+              (nothing for 10.4 s: waiting for the screen to settle)
+19:51:59.027  Tap aimed via settled hierarchy
+19:51:59.027  Tapping at (540, 1769)
+19:52:00.346  Something has changed in the UI judging by view hierarchy. Proceed.
 ```
 
-| Maestro tap, Android | Time | What's on screen |
-|---|---:|---|
-| Give up | 14.1 s | countdown ticking |
-| Start | 12.0 s | countdown starts after the tap |
-| Name field | 8.4 s | keyboard sliding in, blinking cursor |
-| Cancel in the dialog | 8.2 s | countdown ticking behind it |
-| Duration chip | 2.7 s | nothing moving |
+| Maestro tap, Android | Default | `waitToSettleTimeoutMs: 500` | What's on screen |
+|---|---:|---:|---|
+| Start | 11.9 s | 2.6 s | countdown starts after the tap |
+| Give up | 12.3 s | 2.9 s | countdown ticking |
+| Cancel in the dialog | 14.0 s | 3.7 s | countdown ticking behind it |
+| Duration chip | 2.5 s | 2.3 s | nothing moving |
 
-The same Give-up tap takes 2.6 s with Maestro on iOS and an estimated 0.9 s with Mobilewright on
-Android (two 0.2 s reads plus the tap).
+For comparison, Mobilewright taps in 0.8 s on Android: it reads the screen twice (0.2 s each) and
+only checks the button itself.
 
 ### Why it happens (from Maestro's source)
 
@@ -126,8 +129,7 @@ Both platforms call `waitForAppToSettle` before a tap, but they decide "settled"
 
 This is about Maestro's design, not a bug in the app. Any screen with something constantly
 changing (a timer, a progress animation, a video, a spinner) will slow Maestro's taps on Android.
-The code links point to Maestro's current source; our runs used 2.0.10, and its logs show the
-same ~10 s wait.
+Measured with Maestro 2.11.0.
 
 ### The fix: `waitToSettleTimeoutMs`
 
@@ -137,12 +139,12 @@ same ~10 s wait.
 - tapOn: { id: focus.giveUpButton, waitToSettleTimeoutMs: 500 }
 ```
 
-With a 500 ms limit on the four taps over the countdown screen, flow 02 on Android went from
-**76.8 s to 40.7 s** (Give up: 14.1 s → 2.7 s; measured with Maestro 2.0.10). All flows in
+With a 500 ms limit on every tap, flow 02 on Android went from **79 s to 45 s** (Give up:
+12.3 s → 2.9 s). All flows in
 `e2e/maestro/` use this setting on every tap, and the timings in [BENCHMARKS.md](BENCHMARKS.md)
 include it. It makes no difference on iOS, where the settle check is already fast. Maestro is still
-the slowest on Android (9m 21s) because of its normal per-step cost there: 2.7–2.8 s measured for a
-tap on a still screen.
+the slowest on Android (9m 21s) because of its normal per-step cost there: about 2.2 s for a tap on
+a still screen, against 1.4 s on iOS.
 
 ## Challenges we hit
 
@@ -158,8 +160,8 @@ tap on a still screen.
   so every launch needs `permissions: { all: allow }`.
 - **Slow taps on screens that keep changing (Android).** Each tap waits up to ~10 s for the
   screen to settle; `waitToSettleTimeoutMs` fixes it (see above).
-- **Taps below a text field miss on iOS 27.** With the keyboard open, Maestro's iOS driver (2.0.10
-  and 2.11.0) can read the layout from before the keyboard moved it. A tap aimed at Begin landed on
+- **Taps below a text field miss on iOS 27.** With the keyboard open, Maestro's iOS driver (2.11.0)
+  can read the layout from before the keyboard moved it. A tap aimed at Begin landed on
   the "t" key instead (the name became "Adat"), and 5 of 8 flows failed. `hideKeyboard` doesn't help:
   on iOS 27 it fails with "Couldn't hide the keyboard". The flows now press the keyboard's Done key
   first (`common/hide-keyboard-ios.yaml`), on iOS only.
@@ -181,19 +183,13 @@ tap on a still screen.
 - **Leftover process:** its `mobilecli` helper can keep running and block Maestro on the same
   Android emulator (`pkill -f mobilecli`).
 - **Young API:** some options are only documented in the type definitions.
-- **Empty screen reads on a busy emulator.** The Android 17 emulator draws in software, and while
-  the CPU was saturated Mobilewright sometimes got an empty view tree (`no XML content found in
-  uiautomator dump`) and failed a random test. Two of three runs failed one or two tests; Maestro
-  and Appium passed on the same setup.
 
 ### Appium
 
-- **Version matching with Xcode.** XCUITest driver 12.18.x ships a WebDriverAgent that needs a
-  newer Xcode than 26.0.1: on 26.0.1 every iOS session failed with `xcodebuild failed with code 65`
-  until the driver was pinned to 12.13.2. On Xcode 27, 12.18.1 works. Expect to manage
-  driver ↔ Xcode versions.
-- **Xcode 27 replaced Simulator.app with DeviceHub.app.** The driver handles it, but the first
-  sessions waited several minutes while setting up the simulator.
+- **Version matching with Xcode.** Each XCUITest driver release ships a WebDriverAgent built for
+  a range of Xcode versions. 12.18.1 works on Xcode 27, but on an older Xcode every iOS session
+  fails with `xcodebuild failed with code 65` until you pin an older driver (see the
+  [Appium README](appium/README.md)). Expect to manage driver ↔ Xcode versions.
 - **`~id` means different things per platform.** On iOS it's the testID; on Android it's the
   accessibility label, and the testID is the resource-id. A small `el()` helper picks the right
   selector.
