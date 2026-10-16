@@ -15,7 +15,7 @@ image). Replace the old numbers instead of adding rows, and don't update it for 
 | iOS 27.0 | Mobilewright | 0.0.66 | iPhone 18 Pro (simulator) | 8 | 8 | 9.3m | 1m 10s | 2026-10-16 |
 | iOS 27.0 | Appium² | 3.8.0 | iPhone 18 Pro (simulator) | 8 | 8 | **6m 57s** | 52s | 2026-10-16 |
 | Android 17 | Maestro¹ | 2.11.0 | Pixel 9 (emulator, API 37) | 8 | 8 | 9m 21s | 1m 10s | 2026-10-16 |
-| Android 17 | Mobilewright³ | 0.0.66 | Pixel 9 (emulator, API 37) | 8 | 8 | **7.3m** | 55s | 2026-10-16 |
+| Android 17 | Mobilewright | 0.0.66 | Pixel 9 (emulator, API 37) | 8 | 8 | **7.3m** | 55s | 2026-10-16 |
 | Android 17 | Appium² | 3.8.0 | Pixel 9 (emulator, API 37) | 8 | 8 | 7m 32s | 57s | 2026-10-16 |
 
 ¹ Every `tapOn` sets `waitToSettleTimeoutMs: 500`, so a tap waits at most 0.5 s for the screen to
@@ -26,10 +26,6 @@ keyboard is closed with its Done key before tapping a button below a text field
 ² WebdriverIO 10 + Mocha, UiAutomator2 driver 8.7.0, XCUITest driver 12.18.1. Totals are whole
 runs and include starting an Appium session for every spec (about 4 s on Android, 5 s on iOS);
 per-scenario times below are the test bodies only.
-
-³ Two earlier runs on the same setup failed one and two tests: Mobilewright read an empty
-screen (`no XML content found in uiautomator dump`, or no matching element) while the emulator was
-busy drawing in software (see Run conditions). The third run passed 8 of 8; its times are shown.
 
 ## Per scenario
 
