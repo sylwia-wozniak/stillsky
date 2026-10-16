@@ -1,0 +1,11 @@
+# Closes the keyboard on iOS before tapping a button below a text field.
+# On iOS 27, Maestro reads the layout from before the keyboard moved it, so a tap aimed at the
+# button can land on a key instead (it typed "Adat"). `hideKeyboard` fails on iOS 27 ("Couldn't
+# hide the keyboard"), so press the keyboard's Done key instead. Android doesn't need it.
+appId: com.stillsky
+---
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - pressKey: Enter

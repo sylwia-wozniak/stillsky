@@ -7,6 +7,7 @@ tags: [smoke]
 - tapOn: { id: settings.nameInput, waitToSettleTimeoutMs: 500 }
 - eraseText: 5
 - inputText: "Grace"
+- runFlow: common/hide-keyboard-ios.yaml
 - tapOn: { id: settings.saveNameButton, waitToSettleTimeoutMs: 500 }
 - hideKeyboard
 # 40 is off-screen: swipe the horizontal picker first
@@ -33,5 +34,6 @@ tags: [smoke]
 - eraseText: 5
 - inputText: "RESET"
 - assertVisible: { id: dialog.confirmButton, enabled: true }
+- runFlow: common/hide-keyboard-ios.yaml
 - tapOn: { id: dialog.confirmButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: onboarding.nameInput }

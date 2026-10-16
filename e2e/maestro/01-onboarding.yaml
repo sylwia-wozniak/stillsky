@@ -10,10 +10,13 @@ tags: [smoke]
 - tapOn: { id: onboarding.nameInput, waitToSettleTimeoutMs: 500 }
 - inputText: "   "
 - assertVisible: { id: onboarding.nameError }
+- runFlow: common/hide-keyboard-ios.yaml
 - tapOn: { id: onboarding.beginButton, waitToSettleTimeoutMs: 500 }   # disabled: nothing happens
 - assertVisible: { id: onboarding.nameInput }
+- tapOn: { id: onboarding.nameInput, waitToSettleTimeoutMs: 500 }   # refocus (the keyboard may be closed)
 - eraseText: 5
 - inputText: "Ada"
+- runFlow: common/hide-keyboard-ios.yaml
 - tapOn: { id: onboarding.beginButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: tabs.focus }
 - assertVisible: { id: tabs.settings }

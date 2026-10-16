@@ -7,5 +7,6 @@ appId: com.stillsky
       all: allow   # Android debug builds ask for local-network access (Metro)
 - tapOn: { id: onboarding.nameInput, waitToSettleTimeoutMs: 500 }
 - inputText: "Ada"
+- runFlow: hide-keyboard-ios.yaml
 - tapOn: { id: onboarding.beginButton, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: tabs.focus }

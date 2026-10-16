@@ -3,6 +3,12 @@
 Quick end-to-end checks that drive Stillsky by testID. They run against a **debug** build
 (they use the 1-minute duration and Seed demo data helpers), so Metro must be running.
 
+**iOS 27:** with the keyboard open, Maestro's iOS driver (2.0.10 and 2.11.0) can read the layout
+from before the keyboard moved it, so a tap aimed at Begin lands on a key (it typed "Adat") and
+the flow fails. `common/hide-keyboard-ios.yaml` closes the keyboard on iOS before each tap that
+follows typing. It presses the keyboard's Done key, because `hideKeyboard` fails on iOS 27
+("Couldn't hide the keyboard").
+
 ```bash
 npm start                              # Metro
 npm run ios                            # or: npm run android
@@ -23,4 +29,4 @@ maestro test e2e/maestro/05-settings.yaml       # one flow
 | 08-give-up-dialog-not-stale | dialog left open at completion doesn't reappear next session | slow |
 
 `common/` holds subflows used via `runFlow` (fresh start + onboarding, a 70 s wait).
-The same scenarios are good candidates to rewrite in Appium and Mobilewright.
+The same scenarios are also written in [Mobilewright](../mobilewright/) and [Appium](../appium/).
