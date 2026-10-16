@@ -22,7 +22,7 @@ Fill constellations by staying focused. Give up early, and your star falls.
 <img src="docs/screenshots/android-focus.png" width="190" alt="Focus timer on Android" />
 <img src="docs/screenshots/android-sky.png" width="190" alt="Sky on Android" />
 
-<sub>iPhone 17 Pro (iOS 26) and Pixel 9 (Android 17)</sub>
+<sub>iPhone 18 Pro (iOS 27) and Pixel 9 (Android 17)</sub>
 
 </div>
 
