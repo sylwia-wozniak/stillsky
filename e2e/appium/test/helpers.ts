@@ -17,6 +17,13 @@ export function el(testId: string) {
 
 const appArg = () => (driver.isAndroid ? { appId: APP } : { bundleId: APP });
 
+/** The session's device: the adb serial on Android, the simulator UDID on iOS. */
+function deviceId(): string {
+  const id = driver.capabilities['udid' as keyof typeof driver.capabilities];
+  if (typeof id !== 'string') throw new Error('Appium session has no udid capability');
+  return id;
+}
+
 export async function terminate() {
   await driver.execute('mobile: terminateApp', appArg());
 }
@@ -31,11 +38,10 @@ export async function freshStart() {
   if (driver.isAndroid) {
     await driver.execute('mobile: clearApp', { appId: APP });
     // Debug builds on Android 17 need local-network access to reach Metro; clearing data revokes it.
-    execFileSync('adb', ['shell', 'pm', 'grant', APP, 'android.permission.ACCESS_LOCAL_NETWORK']);
+    execFileSync('adb', ['-s', deviceId(), 'shell', 'pm', 'grant', APP, 'android.permission.ACCESS_LOCAL_NETWORK']);
   } else {
     // Appium has no "clear app data" for iOS simulators: empty the app's data container instead.
-    const udid = String(driver.capabilities['appium:udid' as keyof typeof driver.capabilities] ?? 'booted');
-    const dir = execFileSync('xcrun', ['simctl', 'get_app_container', udid, APP, 'data']).toString().trim();
+    const dir = execFileSync('xcrun', ['simctl', 'get_app_container', deviceId(), APP, 'data']).toString().trim();
     execFileSync('/bin/sh', ['-c', `rm -rf "${dir}/Documents/"* "${dir}/Library/"* "${dir}/tmp/"*`]);
   }
   await launch();

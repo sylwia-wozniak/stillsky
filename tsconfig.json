@@ -5,5 +5,5 @@
     "resolveJsonModule": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["**/node_modules", "**/Pods", "e2e/mobilewright"]
+  "exclude": ["**/node_modules", "**/Pods", "e2e/mobilewright", "e2e/appium"]
 }

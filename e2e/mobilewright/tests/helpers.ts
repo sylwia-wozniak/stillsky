@@ -15,7 +15,7 @@ export async function freshStart(device: Device, platform: string | undefined) {
   await device.clearAppData(APP);
   if (platform === 'android') {
     // Debug builds on Android 17 need local-network access to reach Metro; clearing data revokes it.
-    execFileSync('adb', ['shell', 'pm', 'grant', APP, 'android.permission.ACCESS_LOCAL_NETWORK']);
+    execFileSync('adb', ['-s', device.id, 'shell', 'pm', 'grant', APP, 'android.permission.ACCESS_LOCAL_NETWORK']);
   }
   await device.launchApp(APP);
 }

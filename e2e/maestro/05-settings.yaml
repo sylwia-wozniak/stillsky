@@ -9,7 +9,11 @@ tags: [smoke]
 - inputText: "Grace"
 - runFlow: common/hide-keyboard-ios.yaml
 - tapOn: { id: settings.saveNameButton, waitToSettleTimeoutMs: 500 }
-- hideKeyboard
+- runFlow:   # the iOS keyboard is already closed; hideKeyboard fails on iOS 27
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard
 # 40 is off-screen: swipe the horizontal picker first
 - swipe:
     from: { id: settings.duration.25 }
