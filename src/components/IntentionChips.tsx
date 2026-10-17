@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { INTENTIONS, type Intention } from '../domain/types';
 import { TID } from '../testIds';
 import { Chip } from './Chip';
@@ -16,7 +16,7 @@ export function IntentionChips({
       keyboardShouldPersistTaps="handled"
       horizontal
       showsHorizontalScrollIndicator={false}
-      style={{ flexGrow: 0 }}
+      style={styles.list}
     >
       {INTENTIONS.map(t => (
         <Chip
@@ -31,3 +31,7 @@ export function IntentionChips({
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  list: { flexGrow: 0 },
+});

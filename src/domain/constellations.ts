@@ -228,12 +228,15 @@ export function getSkyState(sessions: Session[]): SkyState {
 }
 
 // mulberry32: tiny seeded PRNG so extra stars keep their place between renders.
+// It works on 32-bit integers, so bitwise operators are the point here.
+/* eslint-disable no-bitwise */
 function seeded(seed: number): number {
   let t = (seed + 0x6d2b79f5) | 0;
   t = Math.imul(t ^ (t >>> 15), t | 1);
   t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
+/* eslint-enable no-bitwise */
 
 export function extraStarPosition(index: number): Point {
   return {

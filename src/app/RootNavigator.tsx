@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   DarkTheme,
   NavigationContainer,
@@ -13,7 +13,7 @@ import { FocusScreen } from '../screens/FocusScreen';
 import { SkyScreen } from '../screens/SkyScreen';
 import { StatsScreen } from '../screens/StatsScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
-import { TabIcon } from '../components/TabIcon';
+import { TabIcon, type TabIconName } from '../components/TabIcon';
 import { TID } from '../testIds';
 import { colors, fonts, tabBarStyle } from '../theme/theme';
 
@@ -40,6 +40,14 @@ const theme: Theme = {
   },
 };
 
+// Defined once at module level: an inline tabBarIcon would be a new component on every render.
+const tabIcons = Object.fromEntries(
+  (['Focus', 'Sky', 'Stats', 'Settings'] as TabIconName[]).map(name => [
+    name,
+    ({ color }: { color: string }) => <TabIcon name={name} color={color} />,
+  ]),
+) as Record<TabIconName, (props: { color: string }) => React.ReactNode>;
+
 function MainTabs() {
   return (
     <Tabs.Navigator
@@ -52,7 +60,7 @@ function MainTabs() {
           fontSize: 11,
           letterSpacing: 0.3,
         },
-        tabBarIcon: ({ color }) => <TabIcon name={route.name} color={color} />,
+        tabBarIcon: tabIcons[route.name],
         tabBarActiveTintColor: colors.star,
         tabBarInactiveTintColor: colors.muted,
       })}
@@ -96,7 +104,7 @@ function MainTabs() {
 export function RootNavigator() {
   const { ready, user } = useApp();
   if (!ready) {
-    return <View style={{ flex: 1 }} />;
+    return <View style={styles.fill} />;
   }
   return (
     <NavigationContainer theme={theme}>
@@ -115,3 +123,7 @@ export function RootNavigator() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  fill: { flex: 1 },
+});

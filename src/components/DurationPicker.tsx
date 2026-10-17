@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Chip } from './Chip';
 
 const EDGE_MARGIN = 16;
@@ -49,7 +49,7 @@ export function DurationPicker({
       keyboardShouldPersistTaps="handled"
       horizontal
       showsHorizontalScrollIndicator={false}
-      style={{ flexGrow: 0 }}
+      style={styles.list}
       onLayout={e => {
         viewportWidth.current = e.nativeEvent.layout.width;
         revealSelected();
@@ -77,3 +77,7 @@ export function DurationPicker({
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  list: { flexGrow: 0 },
+});
