@@ -11,7 +11,8 @@ describe('Restore after kill', () => {
     await driver.pause(70_000); // the session ends while the app is closed
     await launch();
 
-    await expect(el(TID.focus.startButton)).toBeDisplayed();
+    // A cold start of the debug app reloads its JS bundle from Metro, which can outlast the default 5 s wait.
+    await el(TID.focus.startButton).waitForDisplayed({ timeout: 30_000 });
     await expect(el(TID.focus.timerText)).not.toBeDisplayed();
     await el(TID.tabs.sky).click();
     await expect(el(TID.sky.litCount)).toHaveText('1 star lit');

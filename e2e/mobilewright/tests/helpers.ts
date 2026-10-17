@@ -9,13 +9,38 @@ export const APP = 'com.stillsky';
 /** Real-time waits shared by several scenarios. */
 export const SESSION_MS = 75_000; // a 1-minute focus session plus margin
 
+/**
+ * The adb serial for a Mobilewright Android device. mobilecli names emulators by their AVD
+ * (e.g. `Pixel_9`) rather than by serial (`emulator-5554`), so look the AVD up among running emulators.
+ */
+function adbSerial(deviceId: string): string {
+  const serials = execFileSync('adb', ['devices'], { encoding: 'utf8' })
+    .split('\n')
+    .slice(1)
+    .map(line => line.split('\t'))
+    .filter(([, state]) => state === 'device')
+    .map(([serial]) => serial);
+  if (serials.includes(deviceId)) {
+    return deviceId;
+  }
+  const emulator = serials.find(
+    serial =>
+      serial.startsWith('emulator-') &&
+      execFileSync('adb', ['-s', serial, 'emu', 'avd', 'name'], { encoding: 'utf8' }).split(/\r?\n/)[0] === deviceId,
+  );
+  if (!emulator) {
+    throw new Error(`No running adb device matches "${deviceId}"`);
+  }
+  return emulator;
+}
+
 /** Starts the app with no stored data, like Maestro's `clearState`. */
 export async function freshStart(device: Device, platform: string | undefined) {
   await device.terminateApp(APP).catch(() => {});
   await device.clearAppData(APP);
   if (platform === 'android') {
     // Debug builds on Android 17 need local-network access to reach Metro; clearing data revokes it.
-    execFileSync('adb', ['-s', device.id, 'shell', 'pm', 'grant', APP, 'android.permission.ACCESS_LOCAL_NETWORK']);
+    execFileSync('adb', ['-s', adbSerial(device.id), 'shell', 'pm', 'grant', APP, 'android.permission.ACCESS_LOCAL_NETWORK']);
   }
   await device.launchApp(APP);
 }
