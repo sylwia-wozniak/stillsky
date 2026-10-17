@@ -52,6 +52,9 @@ From the repo root: `npm run e2e:mobilewright`, `npm run e2e:mobilewright:ios`,
   visible, and Android reports a clipped item as a thin sliver. Compare bounding boxes instead.
 - The suite found a real bug that the Maestro flow hid: with the keyboard open, the first tap on
   a duration chip only closed the keyboard (Maestro called `hideKeyboard` first).
-- Mobilewright's `mobilecli` helper can keep running after a test run and hold the Android
-  emulator's UI automation, which stops Maestro's driver from starting. Stop it first:
-  `pkill -f mobilecli`.
+- Mobilewright's `mobilecli` helper keeps running on the Android emulator for 30 minutes after a
+  test run and holds its UI automation, which stops Maestro's driver and Appium's UiAutomator2
+  from starting. Stop it on the emulator first:
+  `adb shell pkill -f com.mobilenext.mobilecli.DeviceServer`.
+- `device.id` is the AVD name for emulators (`Pixel_9`), not the adb serial (`emulator-5554`), so
+  `tests/helpers.ts` maps it before calling `adb -s`.
