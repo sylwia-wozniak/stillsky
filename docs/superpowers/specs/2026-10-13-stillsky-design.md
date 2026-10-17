@@ -102,7 +102,8 @@ States:
 - **Reset all data** → dialog requiring the user to type `RESET`; confirm button disabled until it
   matches exactly. Confirm clears all storage keys and navigates to Onboarding.
 - **Debug builds only**: **Seed demo data** button — generates ~30 days of random sessions
-  (mixed intentions, ~80% completed) replacing existing sessions.
+  (mixed intentions, ~80% completed). Real sessions are kept; seeding again replaces only the
+  earlier demo sessions.
 - App version (from native build) at bottom.
 
 ## 4.6 Visual design ("Twilight glass")

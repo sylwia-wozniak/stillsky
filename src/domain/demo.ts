@@ -5,6 +5,11 @@ const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
 const DAYS = 30;
 const COMPLETED_SHARE = 0.8;
+const ID_PREFIX = 'demo-';
+
+export function isDemoSession(s: Session): boolean {
+  return s.id.startsWith(ID_PREFIX);
+}
 
 /** ~30 days of plausible sessions for exploring Sky and Stats in debug builds. */
 export function generateDemoSessions(
@@ -25,7 +30,7 @@ export function generateDemoSessions(
       const completed = rand() < COMPLETED_SHARE;
       const failedAfterMin = Math.max(1, Math.floor(plannedMin * rand()));
       sessions.push({
-        id: `demo-${daysAgo}-${k}`,
+        id: `${ID_PREFIX}${daysAgo}-${k}`,
         startedAt: new Date(start).toISOString(),
         endedAt: new Date(
           start + (completed ? plannedMin : failedAfterMin) * 60_000,

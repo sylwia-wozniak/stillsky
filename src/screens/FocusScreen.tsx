@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import {
   activateKeepAwake,
@@ -80,6 +80,13 @@ export function FocusScreen() {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [running, tick]);
+
+  // Coming back to this tab refreshes the greeting (tabs stay mounted for hours).
+  useFocusEffect(
+    useCallback(() => {
+      if (!running) setNow(new Date());
+    }, [running]),
+  );
 
   // Coming back to the app refreshes the clock (greeting, countdown) even while idle.
   useEffect(() => {

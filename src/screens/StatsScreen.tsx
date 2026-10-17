@@ -1,5 +1,13 @@
-import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  AppState,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BarChart } from '../components/BarChart';
 import { computeStats, formatMinutes, type Period } from '../domain/stats';
@@ -51,9 +59,19 @@ function Tile({
 export function StatsScreen() {
   const { sessions } = useApp();
   const [period, setPeriod] = useState<Period>('day');
+  // Tabs stay mounted, so re-read the clock whenever Stats is shown or the app comes back:
+  // otherwise "Day" would still show yesterday after midnight.
+  const [now, setNow] = useState(() => new Date());
+  useFocusEffect(useCallback(() => setNow(new Date()), []));
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', s => {
+      if (s === 'active') setNow(new Date());
+    });
+    return () => sub.remove();
+  }, []);
   const stats = useMemo(
-    () => computeStats(sessions, period, new Date()),
-    [sessions, period],
+    () => computeStats(sessions, period, now),
+    [sessions, period, now],
   );
   const empty = stats.completed + stats.failed === 0;
 

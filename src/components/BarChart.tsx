@@ -6,6 +6,7 @@ import { colors, spacing, typography } from '../theme/theme';
 
 const HEIGHT = 140;
 const GAP = 2;
+const LABEL_W = 32;
 
 interface BarChartProps {
   values: number[];
@@ -55,16 +56,20 @@ export function BarChart({ values, labels, labelEvery = 1 }: BarChartProps) {
           ))}
         </View>
       </View>
+      {/* Labels are wider than a bar in dense charts (a month has ~9 px per bar), so each one
+          is centred under its bar instead of being clipped to the bar's width. */}
       <View style={styles.labels}>
-        {labels.map((l, i) => (
-          <Text
-            key={i}
-            style={[styles.label, { width: barW }]}
-            numberOfLines={1}
-          >
-            {i % labelEvery === 0 ? l : ''}
-          </Text>
-        ))}
+        {labels.map((l, i) =>
+          i % labelEvery === 0 ? (
+            <Text
+              key={i}
+              style={[styles.label, { left: (i + 0.5) * barW - LABEL_W / 2 }]}
+              numberOfLines={1}
+            >
+              {l}
+            </Text>
+          ) : null,
+        )}
       </View>
     </View>
   );
@@ -72,6 +77,12 @@ export function BarChart({ values, labels, labelEvery = 1 }: BarChartProps) {
 
 const styles = StyleSheet.create({
   hit: { position: 'absolute', top: 0, bottom: 0 },
-  labels: { flexDirection: 'row', marginTop: spacing.xs },
-  label: { ...typography.caption, fontSize: 10, textAlign: 'center' },
+  labels: { height: 14, marginTop: spacing.xs },
+  label: {
+    ...typography.caption,
+    position: 'absolute',
+    width: LABEL_W,
+    fontSize: 10,
+    textAlign: 'center',
+  },
 });

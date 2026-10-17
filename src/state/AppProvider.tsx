@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { generateDemoSessions } from '../domain/demo';
+import { generateDemoSessions, isDemoSession } from '../domain/demo';
 import { makeId } from '../domain/id';
 import {
   completeSession,
@@ -62,6 +62,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   sessionsRef.current = sessions;
   const activeRef = useRef(activeSession);
   activeRef.current = activeSession;
+  const userRef = useRef(user);
+  userRef.current = user;
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
 
   const showToast = useCallback((msg: string) => setToast(msg), []);
   const hideToast = useCallback(() => setToast(null), []);
@@ -126,19 +130,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       showToast,
       async createUser(name) {
         const u = { name, createdAt: new Date().toISOString() };
+        userRef.current = u;
+        settingsRef.current = DEFAULT_SETTINGS;
         setUser(u);
         setSettings(DEFAULT_SETTINGS);
         await persist(() => storage.saveSettings(DEFAULT_SETTINGS));
         await persist(() => storage.saveUser(u));
       },
       async renameUser(name) {
-        if (!user) return;
-        const u = { ...user, name };
+        if (!userRef.current) return;
+        const u = { ...userRef.current, name };
+        userRef.current = u;
         setUser(u);
         await persist(() => storage.saveUser(u));
       },
       async updateSettings(patch) {
-        const next = { ...settings, ...patch };
+        const next = { ...settingsRef.current, ...patch };
+        settingsRef.current = next;
         setSettings(next);
         await persist(() => storage.saveSettings(next));
       },
@@ -165,10 +173,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return done;
       },
       async seedDemoData() {
-        const demo = generateDemoSessions(new Date());
-        sessionsRef.current = demo;
-        setSessions(demo);
-        await persist(() => storage.saveSessions(demo));
+        // Keep real sessions; only replace demo data from an earlier seed.
+        const next = [
+          ...sessionsRef.current.filter(s => !isDemoSession(s)),
+          ...generateDemoSessions(new Date()),
+        ];
+        sessionsRef.current = next;
+        setSessions(next);
+        await persist(() => storage.saveSessions(next));
       },
       async resetAll() {
         // Only forget in-memory data once storage is really empty; otherwise old stars
@@ -179,6 +191,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
         sessionsRef.current = [];
         activeRef.current = null;
+        settingsRef.current = DEFAULT_SETTINGS;
+        userRef.current = null;
         setSessions([]);
         setActiveSession(null);
         setSettings(DEFAULT_SETTINGS);
