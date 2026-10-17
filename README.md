@@ -45,8 +45,9 @@ Fill constellations by staying focused. Give up early, and your star falls.
 Stillsky is a practice target for mobile E2E testing with **Appium**, **Mobilewright** and
 **Maestro**, so it is designed to be easy to automate:
 
-- Every interactive or asserted element has a stable `testID` **and** an accessibility label that
-  equals its visible text. All IDs live in [`src/testIds.ts`](src/testIds.ts) and follow
+- Every interactive or asserted element has a stable `testID` **and** an accessibility label,
+  usually its visible text (a few are more descriptive, e.g. the Settings "Save" button is
+  "Save name"). All IDs live in [`src/testIds.ts`](src/testIds.ts) and follow
   `screen.element`: `onboarding.nameInput`, `focus.duration.25`, `focus.intention.study`,
   `sky.constellation.orion`, `stats.bar.3`, `settings.resetButton`, `tabs.sky`…
 - SVG drawings (constellations, chart bars) carry transparent overlay views with test IDs,
@@ -68,7 +69,7 @@ Stillsky is a practice target for mobile E2E testing with **Appium**, **Mobilewr
 
 ## Getting started
 
-**Prerequisites:** Node 20+, Xcode 27 + CocoaPods for iOS (E2E suites use an iPhone 18 Pro
+**Prerequisites:** Node 22.12+, Xcode 27 + CocoaPods for iOS (E2E suites use an iPhone 18 Pro
 simulator on iOS 27), Android Studio with an emulator and JDK 17+ for Android. In `~/.zshrc`:
 
 ```bash
@@ -87,7 +88,7 @@ npm run android      # Android emulator
 ## Tests
 
 ```bash
-npm test                    # unit tests (Vitest): timer, constellations, stats, storage, validation
+npm test                    # unit tests (Vitest): domain rules, storage, app state (AppProvider)
 npm run e2e:maestro         # all Maestro flows (~8–9 min, includes real 1-minute sessions)
 npm run e2e:maestro:smoke   # fast subset (~2–3 min)
 npm run e2e:mobilewright    # Mobilewright suite, iOS then Android (run `npm install` in e2e/mobilewright first)

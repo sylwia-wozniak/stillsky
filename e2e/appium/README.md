@@ -9,11 +9,11 @@ written with **Appium 3** and **WebdriverIO 10** (Mocha, TypeScript). Locators c
 ```bash
 cd e2e/appium
 npm install
-npx appium driver install uiautomator2
-npx appium driver install xcuitest   # see "Xcode version" below
 ```
 
-Appium and its drivers live in this folder (`npx appium`), not globally.
+Appium and both drivers (UiAutomator2, XCUITest) are npm dependencies of this folder, so
+`npm install` installs them; there's no global install and no `appium driver install` step.
+Check with `npx appium driver list --installed`.
 
 ### Xcode version
 
@@ -27,7 +27,7 @@ xcrun simctl create "iPhone 18 Pro" com.apple.CoreSimulator.SimDeviceType.iPhone
 
 On Xcode 26.0.1, driver 12.18.x fails with `xcodebuild failed with code 65`: its WebDriverAgent
 links `lib_TestingInterop.dylib`, which 26.0.1 doesn't have. Pin driver **12.13.2** (WebDriverAgent
-16.12.10) there instead.
+16.12.10) there instead: `npm install -D appium-xcuitest-driver@12.13.2`.
 
 ## Run
 
