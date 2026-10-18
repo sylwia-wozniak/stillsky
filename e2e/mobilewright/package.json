@@ -5,7 +5,7 @@
   "scripts": {
     "test": "mobilewright test",
     "test:ios": "mobilewright test --project ios",
-    "test:android": "mobilewright test --project android"
+    "test:android": "sh ../prepare-android.sh && mobilewright test --project android"
   },
   "author": "",
   "license": "ISC",

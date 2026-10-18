@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test:ios": "wdio run ./wdio.ios.conf.ts",
-    "test:android": "wdio run ./wdio.android.conf.ts"
+    "test:android": "sh ../prepare-android.sh && wdio run ./wdio.android.conf.ts"
   },
   "author": "",
   "license": "ISC",
