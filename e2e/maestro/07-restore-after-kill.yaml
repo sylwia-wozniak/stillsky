@@ -9,7 +9,9 @@ tags: [slow]
 - stopApp
 - runFlow: common/wait-70s.yaml
 - launchApp
-- assertVisible: { id: focus.startButton }
+- extendedWaitUntil:   # a cold start of the debug app reloads its JS bundle from Metro
+    visible: { id: focus.startButton }
+    timeout: 30000
 - assertNotVisible: { id: focus.timerText }
 - tapOn: { id: tabs.sky, waitToSettleTimeoutMs: 500 }
 - assertVisible: { id: sky.litCount, text: "1 star lit" }

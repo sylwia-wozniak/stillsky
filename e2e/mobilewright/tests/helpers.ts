@@ -43,6 +43,9 @@ export async function freshStart(device: Device, platform: string | undefined) {
     execFileSync('adb', ['-s', adbSerial(device.id), 'shell', 'pm', 'grant', APP, 'android.permission.ACCESS_LOCAL_NETWORK']);
   }
   await device.launchApp(APP);
+  // After clearing data the debug app reloads its JS bundle from Metro, which can take longer
+  // than the default 5 s wait.
+  await expect(device.screen.getByTestId(TID.onboarding.nameInput)).toBeVisible({ timeout: 30_000 });
 }
 
 /** Stops and starts the app, keeping its data. */

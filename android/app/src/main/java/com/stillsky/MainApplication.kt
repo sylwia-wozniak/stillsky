@@ -22,6 +22,9 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    if (BuildConfig.DEBUG) {
+      DevServerHost.preferAdbReverse(this)
+    }
     loadReactNative(this)
   }
 }

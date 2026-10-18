@@ -5,6 +5,10 @@ appId: com.stillsky
     clearState: true
     permissions:
       all: allow   # Android debug builds ask for local-network access (Metro)
+# After clearing data the debug app reloads its JS bundle from Metro, which can take a while.
+- extendedWaitUntil:
+    visible: { id: onboarding.nameInput }
+    timeout: 30000
 - tapOn: { id: onboarding.nameInput, waitToSettleTimeoutMs: 500 }
 - inputText: "Ada"
 - runFlow: hide-keyboard-ios.yaml

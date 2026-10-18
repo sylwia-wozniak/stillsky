@@ -6,7 +6,9 @@ tags: [smoke]
     clearState: true
     permissions:
       all: allow   # Android debug builds ask for local-network access (Metro)
-- assertVisible: { id: onboarding.beginButton }
+- extendedWaitUntil:   # the debug app reloads its JS bundle from Metro after clearing data
+    visible: { id: onboarding.beginButton }
+    timeout: 30000
 - tapOn: { id: onboarding.nameInput, waitToSettleTimeoutMs: 500 }
 - inputText: "   "
 - assertVisible: { id: onboarding.nameError }

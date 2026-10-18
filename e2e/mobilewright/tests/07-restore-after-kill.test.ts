@@ -11,7 +11,8 @@ test('a session that ended while the app was killed counts as completed', async 
   await new Promise(resolve => setTimeout(resolve, 70_000)); // the session ends while the app is closed
   await device.launchApp(APP);
 
-  await expect(screen.getByTestId(TID.focus.startButton)).toBeVisible();
+  // A cold start of the debug app reloads its JS bundle from Metro, which can outlast the default 5 s wait.
+  await expect(screen.getByTestId(TID.focus.startButton)).toBeVisible({ timeout: 30_000 });
   await expect(screen.getByTestId(TID.focus.timerText)).toBeHidden();
   await screen.getByTestId(TID.tabs.sky).tap();
   await expect(screen.getByTestId(TID.sky.litCount)).toHaveText('1 star lit');
