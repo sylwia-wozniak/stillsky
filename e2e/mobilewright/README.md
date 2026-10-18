@@ -54,7 +54,7 @@ From the repo root: `npm run e2e:mobilewright`, `npm run e2e:mobilewright:ios`,
   a duration chip only closed the keyboard (Maestro called `hideKeyboard` first).
 - Mobilewright's `mobilecli` helper keeps running on the Android emulator for 30 minutes after a
   test run and holds its UI automation, which stops Maestro's driver and Appium's UiAutomator2
-  from starting. Stop it on the emulator first:
+  from starting. The `:android` npm scripts stop it first (`e2e/prepare-android.sh`); by hand:
   `adb shell pkill -f com.mobilenext.mobilecli.DeviceServer`.
 - `device.id` is the AVD name for emulators (`Pixel_9`), not the adb serial (`emulator-5554`), so
   `tests/helpers.ts` maps it before calling `adb -s`.

@@ -101,9 +101,22 @@ plain-language comparison of Maestro, Mobilewright and Appium is in [e2e/COMPARI
 Maestro runs against a debug build with Metro running. With both a simulator and an emulator
 open, pick one: `maestro --device emulator-5554 test e2e/maestro`.
 
-Start the Android emulator with the Mac's GPU: `emulator -avd Pixel_9 -gpu host`. With the
-default `-gpu auto` it can fall back to software rendering (SwiftShader), and the app's animated
-sky then keeps the emulator so busy that the E2E suites time out.
+**Android runs:**
+
+```bash
+npm run emulator                  # Pixel 9 emulator on the Mac's GPU
+npm start                         # Metro, in another terminal
+npm run android                   # build and install the debug app (once per native change)
+npm run e2e:maestro:android       # or e2e:mobilewright:android, e2e:appium:android
+```
+
+- `npm run emulator` starts the emulator with `-gpu host`. With the default `-gpu auto` it can
+  fall back to software rendering (SwiftShader), and the app's animated sky then keeps the
+  emulator so busy that the suites time out.
+- The `:android` scripts first run `e2e/prepare-android.sh`. It sets up `adb reverse`, so the debug
+  app loads JavaScript through localhost (about 5 s per start instead of 16–22 s through the
+  emulator's default `10.0.2.2`; see `DevServerHost.kt`). It also stops Mobilewright's leftover
+  `mobilecli` helper, which otherwise blocks Maestro and Appium.
 
 ## Build artifacts for Appium
 
