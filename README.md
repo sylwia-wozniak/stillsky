@@ -116,7 +116,9 @@ npm run e2e:maestro:android       # or e2e:mobilewright:android, e2e:appium:andr
 - The `:android` scripts first run `e2e/prepare-android.sh`. It sets up `adb reverse`, so the debug
   app loads JavaScript through localhost (about 5 s per start instead of 16–22 s through the
   emulator's default `10.0.2.2`; see `DevServerHost.kt`). It also stops Mobilewright's leftover
-  `mobilecli` helper, which otherwise blocks Maestro and Appium.
+  `mobilecli` helper, which otherwise blocks Maestro and Appium, builds the bundle once, and waits
+  (up to 5 min) until a freshly booted emulator stops working in the background.
+- The emulator gets slower the longer it runs. Before a long test session, restart it.
 
 ## Build artifacts for Appium
 
