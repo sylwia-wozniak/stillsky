@@ -41,10 +41,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     appDelegate.reactNativeFactory?.startReactNative(
       withModuleName: "Stillsky",
       in: window,
+      initialProperties: initialProperties,
       launchOptions: nil
     )
   }
 }
+
+// The E2E configuration (a Release build with JavaScript bundled in) turns on the test helpers in
+// JavaScript (App's `e2e` prop).
+#if E2E
+private let initialProperties: [AnyHashable: Any]? = ["e2e": true]
+#else
+private let initialProperties: [AnyHashable: Any]? = nil
+#endif
 
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
   override func sourceURL(for bridge: RCTBridge) -> URL? {

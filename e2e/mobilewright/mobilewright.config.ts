@@ -1,7 +1,7 @@
 import { defineConfig } from 'mobilewright';
 
-// Runs against a debug build with Metro running (same as the Maestro suite), so the
-// debug-only 1-minute duration and Seed demo data are available.
+// Runs against the Android test build (npm run android:e2e) or an iOS debug build with Metro,
+// so the 1-minute duration and Seed demo data are available.
 export default defineConfig({
   testDir: './tests',
   bundleId: 'com.stillsky',

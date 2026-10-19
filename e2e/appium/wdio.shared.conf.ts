@@ -1,5 +1,5 @@
 // Shared WebdriverIO settings. Platform configs add capabilities.
-// Runs against a debug build with Metro running (same as the Maestro and Mobilewright suites).
+// Runs against the Android test build (npm run android:e2e) or an iOS debug build with Metro.
 export const shared: Partial<WebdriverIO.Config> = {
   runner: 'local',
   specs: ['./test/specs/**/*.ts'],

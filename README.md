@@ -101,7 +101,29 @@ when a simulator and an emulator are both open. Swap `:ios` for `:android` for t
 Suite timings per tool and platform are tracked in [e2e/BENCHMARKS.md](e2e/BENCHMARKS.md), and a
 plain-language comparison of Maestro, Mobilewright and Appium is in [e2e/COMPARISON.md](e2e/COMPARISON.md).
 
-On iOS the suites run against a debug build with Metro running (`npm start`, `npm run ios`).
+The suites run against a **test build**: a release build with the JavaScript bundled in, so it
+needs no Metro and starts in a second or two, which keeps the runs fast and stable. It keeps the
+test helpers (1-minute focus, Seed demo data); the normal release build has none of them. A debug
+build with Metro works too, but it is slower, and on Android its developer tools keep the
+emulator busy, so tests time out at random.
+
+**iOS runs:**
+
+```bash
+npm run ios:e2e                   # build and install the test build on the iPhone 18 Pro simulator
+npm run e2e:maestro:ios
+```
+
+- **Appium and Mobilewright on iOS still need the debug build** (`npm start`, `npm run ios`).
+  On the test build both hang while a focus session is running: reading the screen (XCUITest's
+  accessibility snapshot, which both use) stops responding or takes minutes, so 5 of 8 specs
+  fail. Maestro, which reads the screen its own way, passes on it. Not solved yet; Appium's
+  `waitForIdleTimeout: 0` stops the hang but the spec still fails.
+
+- The test build is the `E2E` configuration in Xcode (a copy of Release; CocoaPods builds it like
+  Release). Its `E2E` Swift flag makes `AppDelegate.swift` pass `e2e: true` to `App`, which turns
+  the test helpers on.
+- Build it again after every app change (JavaScript too: it is bundled in).
 
 **Android runs:**
 
@@ -111,11 +133,8 @@ npm run android:e2e               # build and install the test build (after ever
 npm run e2e:maestro:android       # or e2e:mobilewright:android, e2e:appium:android
 ```
 
-- The suites run against the **test build** (`e2e` build type in `android/app/build.gradle`): a
-  release build with the JavaScript bundled in, so it needs no Metro and starts in 2–5 s. It
-  keeps the test helpers (1-minute focus, Seed demo data) through `BuildConfig.E2E`; the
-  `release` build has none of them. A debug build works too (with `npm start`), but it is slower
-  and its developer tools keep the emulator busy, so tests time out at random.
+- The test build is the `e2e` build type in `android/app/build.gradle` (a copy of release). Its
+  `BuildConfig.E2E` flag makes `MainActivity.kt` pass `e2e: true` to `App`.
 
 - `npm run emulator` starts the emulator with `-gpu host`. With the default `-gpu auto` it can
   fall back to software rendering (SwiftShader), and the app's animated sky then keeps the
@@ -130,8 +149,9 @@ npm run e2e:maestro:android       # or e2e:mobilewright:android, e2e:appium:andr
 
 ## Build artifacts for Appium
 
-Debug builds load JavaScript from Metro and include the debug helpers. Release builds bundle the
-JavaScript and run on their own.
+Debug builds load JavaScript from Metro and include the test helpers. Release builds bundle the
+JavaScript and run on their own. The test build (E2E / e2e) is a release build with the test
+helpers.
 
 **iOS simulator `.app`**
 
@@ -139,7 +159,7 @@ JavaScript and run on their own.
 xcodebuild -workspace ios/Stillsky.xcworkspace -scheme Stillsky -configuration Release \
   -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build build
 # → ios/build/Build/Products/Release-iphonesimulator/Stillsky.app
-# (use -configuration Debug for the debug helpers)
+# (use -configuration E2E for the test build: → E2E-iphonesimulator/Stillsky.app)
 ```
 
 **Android `.apk`**
@@ -147,6 +167,7 @@ xcodebuild -workspace ios/Stillsky.xcworkspace -scheme Stillsky -configuration R
 ```bash
 cd android
 ./gradlew assembleRelease   # → app/build/outputs/apk/release/app-release.apk (standalone)
+./gradlew assembleE2e       # → app/build/outputs/apk/e2e/app-e2e.apk (test build, standalone)
 ./gradlew assembleDebug     # → app/build/outputs/apk/debug/app-debug.apk (needs Metro)
 ```
 

@@ -1,7 +1,7 @@
 /**
  * Helpers for testing: the 1-minute focus duration and "Seed demo data".
- * On in debug builds and in the Android `e2e` build, a release build (JavaScript bundled in, no
- * Metro) that the E2E suites run against.
+ * On in debug builds and in the test build (Android `e2e` build type, iOS `E2E` configuration),
+ * a release build (JavaScript bundled in, no Metro) that the E2E suites run against.
  */
 let enabled = __DEV__;
 

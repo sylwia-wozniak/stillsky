@@ -19,9 +19,11 @@ Node 22.12+ is required. Android needs `adb` on your `PATH` (see the main README
 
 ## Run
 
-iOS: start Metro and a debug build first (`npm start`, then `npm run ios` in the repo root).
-Android: install the test build (`npm run android:e2e` in the repo root); no Metro needed. The
-tests use the 1-minute duration and Seed demo data, which only debug and test builds have.
+- iOS: start Metro and a debug build first (`npm start`, then `npm run ios` in the repo root).
+  The iOS test build doesn't work with this suite yet (see the main README, "iOS runs").
+- Android: install the test build (`npm run android:e2e` in the repo root); no Metro needed.
+
+The tests use the 1-minute duration and Seed demo data, which only test and debug builds have.
 
 ```bash
 npm run test:ios         # iPhone 18 Pro simulator (iOS 27)

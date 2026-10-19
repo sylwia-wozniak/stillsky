@@ -7,6 +7,7 @@
     "android:e2e": "cd android && ./gradlew :app:installE2e",
     "emulator": "emulator -avd Pixel_9 -gpu host",
     "ios": "react-native run-ios",
+    "ios:e2e": "react-native run-ios --mode E2E --simulator \"iPhone 18 Pro\" --no-packager",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "TZ=UTC vitest run",
