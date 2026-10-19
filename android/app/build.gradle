@@ -84,6 +84,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        buildConfigField "boolean", "E2E", "false"
     }
     signingConfigs {
         debug {
@@ -104,6 +105,17 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
+        // What the E2E suites run against: a release build (JavaScript bundled in, no Metro, starts
+        // in a second or two) that keeps the test helpers (1-minute focus, Seed demo data).
+        e2e {
+            initWith release
+            matchingFallbacks = ['release']
+            manifestPlaceholders = [usesCleartextTraffic: "false"] // React Native sets it only for debug/release
+            buildConfigField "boolean", "E2E", "true"
+        }
+    }
+    buildFeatures {
+        buildConfig true
     }
 }
 

@@ -1,7 +1,7 @@
 import { expect, test } from '@mobilewright/test';
 import { TID, freshStartAndOnboard } from './helpers';
 
-test('seeded demo data fills Sky and Stats (debug builds only)', async ({ device, screen, platform }) => {
+test('seeded demo data fills Sky and Stats (test builds only)', async ({ device, screen, platform }) => {
   await freshStartAndOnboard(device, screen, platform);
   await screen.getByTestId(TID.tabs.settings).tap();
   await screen.getByTestId(TID.settings.seedButton).tap();

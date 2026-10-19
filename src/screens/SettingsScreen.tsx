@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { version } from '../../package.json';
+import { testFeaturesEnabled } from '../app/testFeatures';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { DurationPicker } from '../components/DurationPicker';
 import { durationOptions, validateName } from '../domain/validation';
@@ -118,7 +119,7 @@ export function SettingsScreen() {
           <Text style={styles.dangerText}>Reset all data</Text>
         </Pressable>
 
-        {__DEV__ ? (
+        {testFeaturesEnabled() ? (
           <Pressable
             testID={TID.settings.seedButton}
             accessibilityLabel="Seed demo data"
@@ -126,7 +127,7 @@ export function SettingsScreen() {
             onPress={seedDemoData}
             style={styles.devButton}
           >
-            <Text style={styles.devText}>Seed demo data (debug only)</Text>
+            <Text style={styles.devText}>Seed demo data (test builds only)</Text>
           </Pressable>
         ) : null}
 

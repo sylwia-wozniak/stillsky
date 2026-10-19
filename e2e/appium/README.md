@@ -31,8 +31,9 @@ links `lib_TestingInterop.dylib`, which 26.0.1 doesn't have. Pin driver **12.13.
 
 ## Run
 
-Start Metro and a debug build first (`npm start`, then `npm run ios` / `npm run android` in the
-repo root). The tests use the debug-only 1-minute duration and Seed demo data.
+iOS: start Metro and a debug build first (`npm start`, then `npm run ios` in the repo root).
+Android: install the test build (`npm run android:e2e` in the repo root); no Metro needed. The
+tests use the 1-minute duration and Seed demo data, which only debug and test builds have.
 
 ```bash
 npm run test:ios         # iPhone 18 Pro simulator (iOS 27)

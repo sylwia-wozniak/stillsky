@@ -1,5 +1,6 @@
 package com.stillsky
 
+import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -18,5 +19,9 @@ class MainActivity : ReactActivity() {
    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate =
-      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+      object : DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled) {
+        // The e2e build turns on the test helpers in JavaScript (App's `e2e` prop).
+        override fun getLaunchOptions(): Bundle? =
+            if (BuildConfig.E2E) Bundle().apply { putBoolean("e2e", true) } else null
+      }
 }

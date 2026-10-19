@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "mobilewright test",
     "test:ios": "mobilewright test --project ios",
     "test:android": "sh ../prepare-android.sh && mobilewright test --project android"
   },

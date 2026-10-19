@@ -15,6 +15,7 @@ import { IntentionChips } from '../components/IntentionChips';
 import { greeting } from '../domain/greeting';
 import { formatMMSS, progress, remainingMs } from '../domain/timer';
 import type { Intention } from '../domain/types';
+import { testFeaturesEnabled } from '../app/testFeatures';
 import { durationOptions } from '../domain/validation';
 import { playChime } from '../sound';
 import { useApp } from '../state/AppProvider';
@@ -35,7 +36,7 @@ export function FocusScreen() {
   const navigation = useNavigation<Nav>();
   const { user, settings, activeSession, startSession, giveUp, finishIfDue } =
     useApp();
-  const options = durationOptions(__DEV__);
+  const options = durationOptions(testFeaturesEnabled());
   const [duration, setDuration] = useState(settings.defaultDurationMin);
   const [intention, setIntention] = useState<Intention>('work');
   const [now, setNow] = useState(() => new Date());

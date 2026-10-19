@@ -1,6 +1,6 @@
 import { TID, el, freshStartAndOnboard } from '../helpers';
 
-describe('Demo data (debug builds only)', () => {
+describe('Demo data (test builds only)', () => {
   it('fills Sky and Stats', async () => {
     await freshStartAndOnboard();
     await el(TID.tabs.settings).click();

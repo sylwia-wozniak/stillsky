@@ -9,22 +9,30 @@ if ! adb -s "$SERIAL" get-state >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! curl -sf "$METRO/status" >/dev/null; then
-  echo "Metro is not running. Start it first: npm start" >&2
+if ! adb -s "$SERIAL" shell pm path com.stillsky >/dev/null 2>&1; then
+  echo "Stillsky is not installed. Install the test build: npm run android:e2e" >&2
   exit 1
 fi
-
-# The debug app loads JavaScript through localhost when this is set: ~5 s per start instead of
-# 16-22 s through 10.0.2.2 (see android/app/src/main/java/com/stillsky/DevServerHost.kt).
-adb -s "$SERIAL" reverse tcp:8081 tcp:8081 >/dev/null
 
 # Mobilewright's helper stays on the emulator for 30 min after a run and holds UI automation,
 # which stops Maestro's driver and Appium's UiAutomator2 from starting.
 adb -s "$SERIAL" shell pkill -f com.mobilenext.mobilecli.DeviceServer 2>/dev/null || true
 
-# Build the bundle now, so the first test does not wait for Metro to compile it.
-echo "Warming up Metro..."
-curl -sf -o /dev/null "$METRO/index.bundle?platform=android&dev=true&minify=false&app=com.stillsky"
+if adb -s "$SERIAL" shell dumpsys package com.stillsky | grep -q 'flags=\[.*DEBUGGABLE'; then
+  # A debug build loads JavaScript from Metro on every start, which makes the suites slow and
+  # flaky. The e2e build (npm run android:e2e) has it bundled in.
+  echo "Note: a debug build is installed; for stable runs install the test build: npm run android:e2e"
+  if ! curl -sf "$METRO/status" >/dev/null; then
+    echo "Metro is not running. Start it first: npm start" >&2
+    exit 1
+  fi
+  # Loads JavaScript through localhost: ~5 s per start instead of 16-22 s through 10.0.2.2
+  # (see android/app/src/main/java/com/stillsky/DevServerHost.kt).
+  adb -s "$SERIAL" reverse tcp:8081 tcp:8081 >/dev/null
+  # Build the bundle now, so the first test does not wait for Metro to compile it.
+  echo "Warming up Metro..."
+  curl -sf -o /dev/null "$METRO/index.bundle?platform=android&dev=true&minify=false&app=com.stillsky"
+fi
 
 # A freshly booted emulator keeps working in the background for minutes; tests started then
 # time out at random. Wait until it is idle (1-minute load average below 2), up to 5 minutes.

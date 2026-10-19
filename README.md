@@ -88,36 +88,44 @@ npm run android      # Android emulator
 ## Tests
 
 ```bash
-npm test                    # unit tests (Vitest): domain rules, storage, app state (AppProvider)
-npm run e2e:maestro         # all Maestro flows (~8–9 min, includes real 1-minute sessions)
-npm run e2e:maestro:smoke   # fast subset (~2–3 min)
-npm run e2e:mobilewright    # Mobilewright suite, iOS then Android (run `npm install` in e2e/mobilewright first)
-npm run e2e:appium:ios      # Appium suite (run `npm install` in e2e/appium first); also e2e:appium:android
+npm test                           # unit tests (Vitest): domain rules, storage, app state (AppProvider)
+npm run e2e:maestro:ios            # all Maestro flows (~8–9 min, includes real 1-minute sessions)
+npm run e2e:maestro:smoke:ios      # fast subset (~2–3 min)
+npm run e2e:mobilewright:ios       # Mobilewright suite (run `npm install` in e2e/mobilewright first)
+npm run e2e:appium:ios             # Appium suite (run `npm install` in e2e/appium first)
 ```
+
+Every E2E script names its platform (`:ios` or `:android`), so it never picks the wrong device
+when a simulator and an emulator are both open. Swap `:ios` for `:android` for the emulator.
 
 Suite timings per tool and platform are tracked in [e2e/BENCHMARKS.md](e2e/BENCHMARKS.md), and a
 plain-language comparison of Maestro, Mobilewright and Appium is in [e2e/COMPARISON.md](e2e/COMPARISON.md).
 
-Maestro runs against a debug build with Metro running. With both a simulator and an emulator
-open, pick one: `maestro --device emulator-5554 test e2e/maestro`.
+On iOS the suites run against a debug build with Metro running (`npm start`, `npm run ios`).
 
 **Android runs:**
 
 ```bash
 npm run emulator                  # Pixel 9 emulator on the Mac's GPU
-npm start                         # Metro, in another terminal
-npm run android                   # build and install the debug app (once per native change)
+npm run android:e2e               # build and install the test build (after every app change)
 npm run e2e:maestro:android       # or e2e:mobilewright:android, e2e:appium:android
 ```
+
+- The suites run against the **test build** (`e2e` build type in `android/app/build.gradle`): a
+  release build with the JavaScript bundled in, so it needs no Metro and starts in 2–5 s. It
+  keeps the test helpers (1-minute focus, Seed demo data) through `BuildConfig.E2E`; the
+  `release` build has none of them. A debug build works too (with `npm start`), but it is slower
+  and its developer tools keep the emulator busy, so tests time out at random.
 
 - `npm run emulator` starts the emulator with `-gpu host`. With the default `-gpu auto` it can
   fall back to software rendering (SwiftShader), and the app's animated sky then keeps the
   emulator so busy that the suites time out.
-- The `:android` scripts first run `e2e/prepare-android.sh`. It sets up `adb reverse`, so the debug
-  app loads JavaScript through localhost (about 5 s per start instead of 16–22 s through the
-  emulator's default `10.0.2.2`; see `DevServerHost.kt`). It also stops Mobilewright's leftover
-  `mobilecli` helper, which otherwise blocks Maestro and Appium, builds the bundle once, and waits
-  (up to 5 min) until a freshly booted emulator stops working in the background.
+- The `:android` scripts first run `e2e/prepare-android.sh`. It checks that the app is installed,
+  stops Mobilewright's leftover `mobilecli` helper, which otherwise blocks Maestro and Appium, and
+  waits (up to 5 min) until a freshly booted emulator stops working in the background. With a
+  debug build installed it also checks Metro and sets up `adb reverse`, so the app loads
+  JavaScript through localhost (about 5 s per start instead of 16–22 s through the emulator's
+  default `10.0.2.2`; see `DevServerHost.kt`).
 - The emulator gets slower the longer it runs. Before a long test session, restart it.
 
 ## Build artifacts for Appium

@@ -1,5 +1,5 @@
 appId: com.stillsky
-name: Seeded demo data fills Sky and Stats (debug builds only)
+name: Seeded demo data fills Sky and Stats (test builds only)
 tags: [smoke, debug-only]
 ---
 - runFlow: common/fresh-start.yaml

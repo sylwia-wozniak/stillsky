@@ -19,19 +19,18 @@ Node 22.12+ is required. Android needs `adb` on your `PATH` (see the main README
 
 ## Run
 
-Start Metro and a debug build first (`npm start`, then `npm run ios` / `npm run android` in the
-repo root). The tests use the debug-only 1-minute duration and Seed demo data.
+iOS: start Metro and a debug build first (`npm start`, then `npm run ios` in the repo root).
+Android: install the test build (`npm run android:e2e` in the repo root); no Metro needed. The
+tests use the 1-minute duration and Seed demo data, which only debug and test builds have.
 
 ```bash
 npm run test:ios         # iPhone 18 Pro simulator (iOS 27)
 npm run test:android     # Pixel 9 emulator
-npm test                 # both, one after the other
 npx mobilewright test tests/05-settings.test.ts --project ios   # one file
 npx mobilewright show-report                                    # after a run with --reporter html
 ```
 
-From the repo root: `npm run e2e:mobilewright`, `npm run e2e:mobilewright:ios`,
-`npm run e2e:mobilewright:android`.
+From the repo root: `npm run e2e:mobilewright:ios`, `npm run e2e:mobilewright:android`.
 
 ## How it's set up
 
@@ -40,7 +39,7 @@ From the repo root: `npm run e2e:mobilewright`, `npm run e2e:mobilewright:ios`,
   to failures.
 - [`tests/helpers.ts`](tests/helpers.ts):
   - `freshStart()` clears app data before each test, like Maestro's `clearState`. On Android it
-    re-grants the local-network permission that debug builds need to reach Metro.
+    re-grants the local-network permission that Android 17 asks for.
   - `freshStartAndOnboard()` adds onboarding as "Ada".
   - `swipeUntilVisible()` drags a horizontal list until an item is fully on screen (see below).
 

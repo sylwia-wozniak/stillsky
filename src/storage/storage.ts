@@ -25,7 +25,7 @@ const isObject = (d: unknown): d is Record<string, unknown> =>
 const isString = (v: unknown): v is string => typeof v === 'string';
 const isDateString = (v: unknown): v is string =>
   isString(v) && Number.isFinite(Date.parse(v));
-// Accept debug durations too, so a 1-minute session survives a relaunch in debug builds.
+// Accept debug durations too, so a 1-minute session survives a relaunch in debug and e2e builds.
 const isPlannedMin = (v: unknown): v is number =>
   typeof v === 'number' && isValidDuration(v, true);
 const isIntention = (v: unknown) => INTENTIONS.some(t => t.id === v);
