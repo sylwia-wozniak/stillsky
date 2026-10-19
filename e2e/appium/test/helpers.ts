@@ -15,6 +15,24 @@ export function el(testId: string) {
     : $(`~${testId}`);
 }
 
+/**
+ * Types into a text field and waits until the field shows all of it. On iOS the driver types
+ * faster than the app handles each change, and a tap right after `setValue` can catch the app with
+ * a letter missing ("Ad" instead of "Ada"), so it checks and retypes if needed.
+ */
+export async function typeText(testId: string, text: string) {
+  const field = el(testId);
+  for (let attempt = 1; ; attempt++) {
+    await field.setValue(text);
+    try {
+      await field.waitUntil(async () => (await field.getText()) === text, { timeout: 3_000 });
+      return;
+    } catch (e) {
+      if (attempt === 3) throw e;
+    }
+  }
+}
+
 const appArg = () => (driver.isAndroid ? { appId: APP } : { bundleId: APP });
 
 /** The session's device: the adb serial on Android, the simulator UDID on iOS. */
@@ -59,7 +77,7 @@ export async function relaunch() {
 /** Fresh start, then completes onboarding as "Ada". */
 export async function freshStartAndOnboard() {
   await freshStart();
-  await el(TID.onboarding.nameInput).setValue('Ada');
+  await typeText(TID.onboarding.nameInput, 'Ada');
   await el(TID.onboarding.beginButton).click();
   await expect(el(TID.tabs.focus)).toBeDisplayed();
 }

@@ -1,11 +1,11 @@
-import { TID, el, freshStartAndOnboard, isSwitchOn, relaunch, swipeUntilVisible } from '../helpers';
+import { TID, el, freshStartAndOnboard, isSwitchOn, relaunch, swipeUntilVisible, typeText } from '../helpers';
 
 describe('Settings', () => {
   it('persist across relaunch and Reset needs exact confirmation', async () => {
     await freshStartAndOnboard();
     await el(TID.tabs.settings).click();
 
-    await el(TID.settings.nameInput).setValue('Grace');
+    await typeText(TID.settings.nameInput, 'Grace');
     await el(TID.settings.saveNameButton).click();
 
     // 40 starts off-screen in the horizontal picker
@@ -23,9 +23,9 @@ describe('Settings', () => {
     expect(await isSwitchOn(TID.settings.keepAwakeToggle)).toBe(true);
 
     await el(TID.settings.resetButton).click();
-    await el(TID.dialog.input).setValue('reset');
+    await typeText(TID.dialog.input, 'reset');
     await expect(el(TID.dialog.confirmButton)).toBeDisabled();
-    await el(TID.dialog.input).setValue('RESET');
+    await typeText(TID.dialog.input, 'RESET');
     await expect(el(TID.dialog.confirmButton)).toBeEnabled();
     await el(TID.dialog.confirmButton).click();
     await expect(el(TID.onboarding.nameInput)).toBeDisplayed();
