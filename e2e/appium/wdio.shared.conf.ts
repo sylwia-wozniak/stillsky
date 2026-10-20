@@ -1,5 +1,5 @@
 // Shared WebdriverIO settings. Platform configs add capabilities.
-// Runs against the Android test build (npm run android:e2e) or an iOS debug build with Metro.
+// Runs against the test build (npm run ios:e2e / android:e2e), like the other suites.
 export const shared: Partial<WebdriverIO.Config> = {
   runner: 'local',
   specs: ['./test/specs/**/*.ts'],

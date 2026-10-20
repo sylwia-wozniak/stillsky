@@ -11,14 +11,14 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "TZ=UTC vitest run",
-    "e2e:maestro:ios": "maestro --platform ios test e2e/maestro",
-    "e2e:maestro:android": "sh e2e/prepare-android.sh && maestro --device emulator-5554 test e2e/maestro",
-    "e2e:maestro:smoke:ios": "maestro --platform ios test e2e/maestro --include-tags smoke",
-    "e2e:maestro:smoke:android": "sh e2e/prepare-android.sh && maestro --device emulator-5554 test e2e/maestro --include-tags smoke",
-    "e2e:mobilewright:ios": "npm --prefix e2e/mobilewright run test:ios",
-    "e2e:mobilewright:android": "npm --prefix e2e/mobilewright run test:android",
-    "e2e:appium:ios": "npm --prefix e2e/appium run test:ios",
-    "e2e:appium:android": "npm --prefix e2e/appium run test:android"
+    "e2e:maestro:ios": "caffeinate -i maestro --platform ios test e2e/maestro",
+    "e2e:maestro:android": "caffeinate -i sh -c \"sh e2e/prepare-android.sh && maestro --device emulator-5554 test e2e/maestro\"",
+    "e2e:maestro:smoke:ios": "caffeinate -i maestro --platform ios test e2e/maestro --include-tags smoke",
+    "e2e:maestro:smoke:android": "caffeinate -i sh -c \"sh e2e/prepare-android.sh && maestro --device emulator-5554 test e2e/maestro --include-tags smoke\"",
+    "e2e:mobilewright:ios": "caffeinate -i npm --prefix e2e/mobilewright run test:ios",
+    "e2e:mobilewright:android": "caffeinate -i npm --prefix e2e/mobilewright run test:android",
+    "e2e:appium:ios": "caffeinate -i npm --prefix e2e/appium run test:ios",
+    "e2e:appium:android": "caffeinate -i npm --prefix e2e/appium run test:android"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^3.1.1",

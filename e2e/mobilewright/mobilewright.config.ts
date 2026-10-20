@@ -1,7 +1,7 @@
 import { defineConfig } from 'mobilewright';
 
-// Runs against the Android test build (npm run android:e2e) or an iOS debug build with Metro,
-// so the 1-minute duration and Seed demo data are available.
+// Runs against the test build (npm run ios:e2e / android:e2e), like the other suites, so the
+// 1-minute duration and Seed demo data are available.
 export default defineConfig({
   testDir: './tests',
   bundleId: 'com.stillsky',

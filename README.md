@@ -98,6 +98,11 @@ npm run e2e:appium:ios             # Appium suite (run `npm install` in e2e/appi
 Every E2E script names its platform (`:ios` or `:android`), so it never picks the wrong device
 when a simulator and an emulator are both open. Swap `:ios` for `:android` for the emulator.
 
+**Keep the Mac awake during a run.** While the Mac sleeps the simulator, the emulator and the test
+tools stop, and the suite fails with timeouts, closed WebSocket connections or tests that take 15
+minutes. The E2E scripts run under `caffeinate -i`, which stops idle sleep, but closing the lid
+still puts a MacBook to sleep (unless it is on power with an external display).
+
 Suite timings per tool and platform are tracked in [e2e/BENCHMARKS.md](e2e/BENCHMARKS.md), and a
 plain-language comparison of Maestro, Mobilewright and Appium is in [e2e/COMPARISON.md](e2e/COMPARISON.md).
 
@@ -111,14 +116,8 @@ emulator busy, so tests time out at random.
 
 ```bash
 npm run ios:e2e                   # build and install the test build on the iPhone 18 Pro simulator
-npm run e2e:maestro:ios
+npm run e2e:maestro:ios           # or e2e:mobilewright:ios, e2e:appium:ios
 ```
-
-- **Appium and Mobilewright on iOS still need the debug build** (`npm start`, `npm run ios`).
-  On the test build both hang while a focus session is running: reading the screen (XCUITest's
-  accessibility snapshot, which both use) stops responding or takes minutes, so 5 of 8 specs
-  fail. Maestro, which reads the screen its own way, passes on it. Not solved yet; Appium's
-  `waitForIdleTimeout: 0` stops the hang but the spec still fails.
 
 - The test build is the `E2E` configuration in Xcode (a copy of Release; CocoaPods builds it like
   Release). Its `E2E` Swift flag makes `AppDelegate.swift` pass `e2e: true` to `App`, which turns
